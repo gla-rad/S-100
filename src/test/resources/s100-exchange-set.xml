@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<S100_ExchangeCatalogue xmlns="http://www.iho.int/s100/xc/5.0" xmlns:ns2="http://standards.iso.org/iso/19115/-3/gco/1.0" xmlns:ns3="http://standards.iso.org/iso/19115/-3/cit/2.0" xmlns:ns4="http://standards.iso.org/iso/19115/-3/cit/1.0" xmlns:ns5="http://standards.iso.org/iso/19115/-3/lan/1.0" xmlns:ns6="http://standards.iso.org/iso/19115/-3/mcc/1.0" xmlns:ns7="http://www.w3.org/1999/xlink" xmlns:ns8="http://standards.iso.org/iso/19115/-3/gex/1.0" xmlns:ns9="http://www.opengis.net/gml/3.2" xmlns:ns10="http://www.isotc211.org/2005/gco" xmlns:ns11="http://www.isotc211.org/2005/gmd" xmlns:ns12="http://www.iho.int/s100/se/5.0" xmlns:ns13="http://standards.iso.org/iso/19115/-3/mco/1.0" xmlns:ns14="http://standards.iso.org/iso/19115/-3/mri/1.0" xmlns:ns15="http://standards.iso.org/iso/19115/-3/mmi/1.0" xmlns:ns16="http://www.isotc211.org/2005/gts">
+    <identifier>
+        <identifier>2d7c8116-75a9-4fb8-b1b3-7a698d416b97</identifier>
+        <dateTime>2001-01-01</dateTime>
+    </identifier>
+    <contact>
+        <organization>
+            <ns2:CharacterString>GRAD</ns2:CharacterString>
+        </organization>
+        <phone ns2:isoType="ISO 19103:2015" id="Test Phone" uuid="4f92d85a-fd3d-4438-8983-dac15c14d435">
+            <ns3:number>
+                <ns2:CharacterString>01255245000</ns2:CharacterString>
+            </ns3:number>
+        </phone>
+        <address ns2:isoType="ISO 19103:2015" id="Test Address" uuid="40267999-1ee4-4633-b32e-899031207e1f">
+            <ns3:city>
+                <ns2:CharacterString>Harwich</ns2:CharacterString>
+            </ns3:city>
+            <ns3:administrativeArea>
+                <ns2:CharacterString>England and Wales</ns2:CharacterString>
+            </ns3:administrativeArea>
+            <ns3:country>
+                <ns2:CharacterString>UK</ns2:CharacterString>
+            </ns3:country>
+        </address>
+    </contact>
+    <productSpecification>
+        <name>S-125</name>
+        <date>2022-10-22</date>
+        <productIdentifier>S-125</productIdentifier>
+        <number>1</number>
+        <compliancyCategory>category1</compliancyCategory>
+    </productSpecification>
+    <exchangeCatalogueDescription>
+        <ns2:CharacterString>Test Exchange Set Description.</ns2:CharacterString>
+    </exchangeCatalogueDescription>
+    <exchangeCatalogueComment>
+        <ns2:CharacterString>Test Exchange Set Comment.</ns2:CharacterString>
+    </exchangeCatalogueComment>
+    <dataServerIdentifier>Test Exchange Set</dataServerIdentifier>
+    <datasetDiscoveryMetadata/>
+</S100_ExchangeCatalogue>
