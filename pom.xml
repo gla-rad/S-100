@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.grad.eNav</groupId>
-    <artifactId>s100Catalogue</artifactId>
+    <artifactId>S100Catalogue</artifactId>
     <version>0.5.1</version>
 
     <properties>
