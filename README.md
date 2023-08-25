@@ -3,7 +3,7 @@ This repository contains some preliminary work on the IHO S100 Catalog exchange
 sets, performed by the UK's General Lighthouse Authority Research and 
 Development Directorate.
 
-*NO NOT USE THIS ON PRODUCTION*
+*DO NOT USE THIS ON PRODUCTION*
 
 The purpose of this repository is to just be used as a reference during the
 S-100 standardization process.
