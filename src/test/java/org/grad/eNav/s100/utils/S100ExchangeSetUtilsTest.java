@@ -18,6 +18,8 @@ package org.grad.eNav.s100.utils;
 
 import _int.iho.s100.catalog._5_0.*;
 import org.apache.commons.io.IOUtils;
+import org.iso.standards.iso._19115.__3.cit._2.*;
+import org.iso.standards.iso._19115.__3.gco._1.CodeListValueType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -33,8 +35,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 class S100ExchangeSetUtilsTest {
 
@@ -47,6 +48,7 @@ class S100ExchangeSetUtilsTest {
     private org.iso.standards.iso._19115.__3.gco._1.ObjectFactory gcoObjectFactory = new org.iso.standards.iso._19115.__3.gco._1.ObjectFactory();
     private org.iso.standards.iso._19115.__3.lan._1.ObjectFactory lanObjectFactory = new org.iso.standards.iso._19115.__3.lan._1.ObjectFactory();
     private String isoType = "ISO 19103:2015";
+    private DateTimeFormatter timeFormat = DateTimeFormatter.ISO_TIME;
     private DateTimeFormatter dateFormat = DateTimeFormatter.ISO_DATE;
     private DateTimeFormatter dateTimeFormat = DateTimeFormatter.ISO_DATE_TIME;
 
@@ -109,6 +111,54 @@ class S100ExchangeSetUtilsTest {
         //           The S100 Exchange Catalogue Discovery Metadata           //
         //====================================================================//
         S100ExchangeCatalogue.DatasetDiscoveryMetadata datasetDiscoveryMetadata = new S100ExchangeCatalogue.DatasetDiscoveryMetadata();
+        S100DatasetDiscoveryMetadata metadata = new S100DatasetDiscoveryMetadata();
+        metadata.setFileName("testFile");
+        metadata.setDatasetID("testFileId");
+        metadata.setDescription(S100ExchangeSetUtils.createCharacterString("description"));
+        metadata.setCompressionFlag(false);
+        metadata.setDataProtection(false);
+        metadata.setProtectionScheme(S100ProtectionScheme.S_100_P_15);
+        metadata.setCopyright(true);
+        S100ClassificationCodePropertyType s100ClassificationCodePropertyType = new S100ClassificationCodePropertyType();
+        final CodeListValueType classificationCodeListValueType = new CodeListValueType();
+        classificationCodeListValueType.setCodeList("classificationList");
+        classificationCodeListValueType.setCodeSpace("classificationSpace");
+        classificationCodeListValueType.setCodeListValue("classificationListValue");
+        classificationCodeListValueType.setValue("classificationValue");
+        s100ClassificationCodePropertyType.setMDClassificationCode(classificationCodeListValueType);
+        metadata.setClassification(s100ClassificationCodePropertyType);
+        metadata.setPurpose(S100Purpose.NEW_DATASET);
+        metadata.setNotForNavigation(false);
+        metadata.setEditionNumber(BigInteger.ONE);
+        metadata.setUpdateNumber(BigInteger.ZERO);
+        metadata.setUpdateApplicationDate(LocalDate.parse("2022-10-22", this.dateFormat));
+        metadata.setIssueDate(LocalDate.parse("2022-10-22", this.dateFormat));
+        metadata.setBoundingBox(null);
+        metadata.setTemporalExtent(null);
+        final CIResponsibilityPropertyType ciResponsibilityPropertyType = new CIResponsibilityPropertyType();
+        final CIResponsibilityType ciResponsibilityType = new CIResponsibilityType();
+        final CIRoleCodePropertyType ciRoleCodePropertyType= new CIRoleCodePropertyType();
+        final CodeListValueType ciRoleCodeListValueType = new CodeListValueType();
+        ciRoleCodeListValueType.setCodeList(null);
+        ciRoleCodeListValueType.setCodeSpace(null);
+        ciRoleCodeListValueType.setCodeListValue("custodian");
+        ciRoleCodeListValueType.setValue("custodian");
+        ciRoleCodePropertyType.setCIRoleCode(ciRoleCodeListValueType);
+        ciResponsibilityType.setRole(ciRoleCodePropertyType);
+        final CIOrganisationType ciOrganisationType = new CIOrganisationType();
+        ciOrganisationType.setName(null);
+        final AbstractCIPartyPropertyType abstractCIPartyPropertyType = new AbstractCIPartyPropertyType();
+        abstractCIPartyPropertyType.setAbstractCIParty(
+                new org.iso.standards.iso._19115.__3.cit._2.ObjectFactory()
+                        .createCIOrganisation(ciOrganisationType)
+        );
+        ciResponsibilityType.setParties(Collections.singletonList(abstractCIPartyPropertyType));
+        ciResponsibilityPropertyType.setCIResponsibility(ciResponsibilityType);
+        metadata.setProducingAgency(ciResponsibilityPropertyType);
+        metadata.setProducerCode("XX00");
+        metadata.setMetadataDateStamp(LocalDate.parse("2022-10-22", this.dateFormat));
+        metadata.setReplacedData(false);
+        datasetDiscoveryMetadata.setS100DatasetDiscoveryMetadatas(Collections.singletonList(metadata));
         this.s100ExchangeCatalogue.setDatasetDiscoveryMetadata(datasetDiscoveryMetadata);
     }
 
@@ -129,7 +179,6 @@ class S100ExchangeSetUtilsTest {
      * Test that we can generate (unmarshall) an S-125 POJO based on a valid
      * XML S-125 Dataset.
      *
-     * @throws IOException any IO exceptions while reading the input XML file
      * @throws JAXBException a JAXB exception thrown during the unmarshalling operation
      */
     @Test
@@ -146,6 +195,28 @@ class S100ExchangeSetUtilsTest {
         assertNotNull( result.getExchangeCatalogueComment());
         assertNotNull( result.getExchangeCatalogueComment().getCharacterString());
         assertEquals(this.s100ExchangeCatalogue.getExchangeCatalogueComment().getCharacterString().getValue(), result.getExchangeCatalogueComment().getCharacterString().getValue());
+        assertNotNull(result.getDatasetDiscoveryMetadata());
+        assertNotNull(result.getDatasetDiscoveryMetadata().getS100DatasetDiscoveryMetadatas());
+        assertEquals(1, result.getDatasetDiscoveryMetadata().getS100DatasetDiscoveryMetadatas().size());
+
+        // Now verify the dataset discovery metadata
+        final S100DatasetDiscoveryMetadata metadata = result.getDatasetDiscoveryMetadata().getS100DatasetDiscoveryMetadatas().get(0);
+        assertEquals(this.s100ExchangeCatalogue.getDatasetDiscoveryMetadata().getS100DatasetDiscoveryMetadatas().get(0).getFileName(), metadata.getFileName());
+        assertEquals(this.s100ExchangeCatalogue.getDatasetDiscoveryMetadata().getS100DatasetDiscoveryMetadatas().get(0).getDatasetID(), metadata.getDatasetID());
+        assertNotNull(metadata.getDescription().getCharacterString());
+        assertNotNull(metadata.getClassification());
+        assertEquals(this.s100ExchangeCatalogue.getDatasetDiscoveryMetadata().getS100DatasetDiscoveryMetadatas().get(0).getPurpose(), metadata.getPurpose());
+        assertFalse(metadata.isNotForNavigation());
+        assertEquals(this.s100ExchangeCatalogue.getDatasetDiscoveryMetadata().getS100DatasetDiscoveryMetadatas().get(0).getEditionNumber(), metadata.getEditionNumber());
+        assertEquals(this.s100ExchangeCatalogue.getDatasetDiscoveryMetadata().getS100DatasetDiscoveryMetadatas().get(0).getUpdateNumber(), metadata.getUpdateNumber());
+        assertEquals(this.s100ExchangeCatalogue.getDatasetDiscoveryMetadata().getS100DatasetDiscoveryMetadatas().get(0).getUpdateApplicationDate(), metadata.getUpdateApplicationDate());
+        assertEquals(this.s100ExchangeCatalogue.getDatasetDiscoveryMetadata().getS100DatasetDiscoveryMetadatas().get(0).getIssueDate(), metadata.getIssueDate());
+        assertNull(metadata.getBoundingBox());
+        assertNull(metadata.getTemporalExtent());
+        assertNotNull(metadata.getProducingAgency());
+        assertEquals(this.s100ExchangeCatalogue.getDatasetDiscoveryMetadata().getS100DatasetDiscoveryMetadatas().get(0).getProducerCode(), metadata.getProducerCode());
+        assertEquals(this.s100ExchangeCatalogue.getDatasetDiscoveryMetadata().getS100DatasetDiscoveryMetadatas().get(0).getMetadataDateStamp(), metadata.getMetadataDateStamp());
+        assertEquals(this.s100ExchangeCatalogue.getDatasetDiscoveryMetadata().getS100DatasetDiscoveryMetadatas().get(0).isReplacedData(), metadata.isReplacedData());
     }
 
 }

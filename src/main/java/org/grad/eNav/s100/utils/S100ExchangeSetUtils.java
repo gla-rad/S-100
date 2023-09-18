@@ -24,6 +24,8 @@ import javax.xml.bind.*;
 import javax.xml.namespace.QName;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.util.Collection;
+import java.util.Objects;
 
 /**
  * The S-100 Utility Class.
@@ -36,7 +38,7 @@ import java.io.ByteArrayOutputStream;
 public class S100ExchangeSetUtils {
 
     /**
-     * A helper function to easily generate characyer string property types
+     * A helper function to easily generate character string property types
      * that are used by the ISO standards.
      *
      * @param characterString   The string to be tranformed into a character string property type

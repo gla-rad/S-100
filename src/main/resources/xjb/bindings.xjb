@@ -7,9 +7,10 @@
 
     <globalBindings typesafeEnumMaxMembers="1000" typesafeEnumMemberName="generateName">
         <xjc:javaType name="java.lang.Double[]" xmlType="gml:doubleList" adapter="org.grad.eNav.s100.utils.DoubleListAdapter"/>
+        <xjc:javaType name="java.time.LocalTime" xmlType="xs:time" adapter="org.grad.eNav.s100.utils.TimeAdapter"/>
         <xjc:javaType name="java.time.LocalDate" xmlType="xs:date" adapter="org.grad.eNav.s100.utils.DateAdapter"/>
+        <xjc:javaType name="java.time.LocalDate" xmlType="gco:Date_Type" adapter="org.grad.eNav.s100.utils.DateAdapter"/>
         <xjc:javaType name="java.time.LocalDateTime" xmlType="xs:dateTime" adapter="org.grad.eNav.s100.utils.DateTimeAdapter"/>
-        <xjc:javaType name="java.time.LocalDateTime" xmlType="gco:Date_Type" adapter="org.grad.eNav.s100.utils.DateTimeAdapter"/>
         <xjc:simple/>
     </globalBindings>
 

@@ -17,20 +17,21 @@
 package org.grad.eNav.s100.utils;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
 /**
- * The Date Adapter Class.
+ * The Time Adapter Class.
  *
- * This is used to translate between the java.time.LocalDate objects and the XML
- * date elements.
+ * This is used to translate between the java.time.LocalTime objects and the XML
+ * time elements.
  *
  * @author Nikolaos Vastardis (email: Nikolaos.Vastardis@gla-rad.org)
  */
-public class DateAdapter extends XmlAdapter<String, LocalDate> {
+public class TimeAdapter extends XmlAdapter<String, LocalTime> {
 
-    private final DateTimeFormatter dateFormat = DateTimeFormatter.ISO_DATE;
+    private final DateTimeFormatter dateFormat = DateTimeFormatter.ISO_TIME;
 
     /**
      * Marshall a Java Date object into an XML element.
@@ -39,7 +40,7 @@ public class DateAdapter extends XmlAdapter<String, LocalDate> {
      * @return The XML element
      */
     @Override
-    public String marshal(LocalDate date) {
+    public String marshal(LocalTime date) {
         synchronized (dateFormat) {
             return dateFormat.format(date);
         }
@@ -52,9 +53,9 @@ public class DateAdapter extends XmlAdapter<String, LocalDate> {
      * @return The Java Date object
      */
     @Override
-    public LocalDate unmarshal(String xml) {
+    public LocalTime unmarshal(String xml) {
         synchronized (dateFormat) {
-            return LocalDate.parse(xml, dateFormat);
+            return LocalTime.parse(xml, dateFormat);
         }
     }
 

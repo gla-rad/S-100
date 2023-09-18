@@ -23,8 +23,8 @@ import java.time.format.DateTimeFormatter;
 /**
  * The DateTime Adapter Class.
  *
- * This is used to translate between the Java util.Date objects and the XML
- * dateTime elements.
+ * This is used to translate between the java.time.LocalDateTime objects and the
+ * XML dateTime elements.
  *
  * @author Nikolaos Vastardis (email: Nikolaos.Vastardis@gla-rad.org)
  */

@@ -39,5 +39,39 @@
         <ns2:CharacterString>Test Exchange Set Comment.</ns2:CharacterString>
     </exchangeCatalogueComment>
     <dataServerIdentifier>Test Exchange Set</dataServerIdentifier>
-    <datasetDiscoveryMetadata/>
+    <datasetDiscoveryMetadata>
+        <S100_DatasetDiscoveryMetadata>
+            <fileName>testFile</fileName>
+            <description>
+                <ns2:CharacterString>description</ns2:CharacterString>
+            </description>
+            <datasetID>testFileId</datasetID>
+            <compressionFlag>false</compressionFlag>
+            <dataProtection>false</dataProtection>
+            <protectionScheme>S100p15</protectionScheme>
+            <copyright>true</copyright>
+            <classification>
+                <ns13:MD_ClassificationCode codeList="classificationList" codeListValue="classificationListValue" codeSpace="classificationSpace">classificationValue</ns13:MD_ClassificationCode>
+            </classification>
+            <purpose>newDataset</purpose>
+            <notForNavigation>false</notForNavigation>
+            <editionNumber>1</editionNumber>
+            <updateNumber>0</updateNumber>
+            <updateApplicationDate>2022-10-22</updateApplicationDate>
+            <issueDate>2022-10-22</issueDate>
+            <producingAgency>
+                <ns3:CI_Responsibility>
+                    <ns3:role>
+                        <ns3:CI_RoleCode codeListValue="custodian">custodian</ns3:CI_RoleCode>
+                    </ns3:role>
+                    <ns3:party>
+                        <ns3:CI_Organisation/>
+                    </ns3:party>
+                </ns3:CI_Responsibility>
+            </producingAgency>
+            <producerCode>XX00</producerCode>
+            <metadataDateStamp>2022-10-22</metadataDateStamp>
+            <replacedData>false</replacedData>
+        </S100_DatasetDiscoveryMetadata>
+    </datasetDiscoveryMetadata>
 </S100_ExchangeCatalogue>
