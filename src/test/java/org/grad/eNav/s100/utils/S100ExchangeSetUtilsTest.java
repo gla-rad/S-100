@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 GLA Research and Development Directorate
+ * Copyright (c) 2023 GLA Research and Development Directorate
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,12 @@ package org.grad.eNav.s100.utils;
 
 import _int.iho.s100.catalog._5_0.*;
 import org.apache.commons.io.IOUtils;
+import org.grad.eNav.s100.enums.MaintenanceFrequency;
+import org.grad.eNav.s100.enums.RoleCode;
+import org.grad.eNav.s100.enums.SecurityClassification;
+import org.grad.eNav.s100.enums.TelephoneType;
 import org.iso.standards.iso._19115.__3.cit._2.*;
+import org.iso.standards.iso._19115.__3.gco._1.CharacterStringPropertyType;
 import org.iso.standards.iso._19115.__3.gco._1.CodeListValueType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,11 +33,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.text.ParseException;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -40,6 +51,8 @@ import static org.junit.jupiter.api.Assertions.*;
 class S100ExchangeSetUtilsTest {
 
     // Test Variables
+    private S100ExchangeCatalogueBuilder s100ExchangeCatalogueBuilder;
+    private S100DatasetDiscoveryMetadataBuilder s100DatasetDiscoveryMetadataBuilder;
     private S100ExchangeCatalogue s100ExchangeCatalogue;
     private String s100ExchangeSetXml;
 
@@ -56,110 +69,159 @@ class S100ExchangeSetUtilsTest {
      * Common setup for all the tests.
      */
     @BeforeEach
-    void setup() throws IOException, ParseException {
-        final InputStream in = ClassLoader.getSystemResourceAsStream("s100-exchange-set.xml");
-        this.s100ExchangeSetXml = IOUtils.toString(in, StandardCharsets.UTF_8.name());
+    void setup() throws IOException, CertificateException, JAXBException {
+        // Create an exchange set catalogue builder
+        this.s100ExchangeCatalogueBuilder = new S100ExchangeCatalogueBuilder((id, algorithm, payload) -> {
+            S100SEDigitalSignature s100SEDigitalSignature = new S100SEDigitalSignature();
+            s100SEDigitalSignature.setId(id.toString());
+            s100SEDigitalSignature.setCertificateRef("ref");
+            s100SEDigitalSignature.setValue("signature".getBytes());
+            return s100SEDigitalSignature;
+        });
 
-        // Initialise the Dataset
-        this.s100ExchangeCatalogue = new S100ExchangeCatalogue();
-        this.s100ExchangeCatalogue.setDataServerIdentifier("Test Exchange Set");
-        this.s100ExchangeCatalogue.setExchangeCatalogueDescription(S100ExchangeSetUtils.createCharacterString("Test Exchange Set Description."));
-        this.s100ExchangeCatalogue.setExchangeCatalogueComment(S100ExchangeSetUtils.createCharacterString("Test Exchange Set Comment."));
+        // Create the medatata file builders
+        this.s100DatasetDiscoveryMetadataBuilder = new S100DatasetDiscoveryMetadataBuilder((id, algorithm, payload) -> {
+            S100SEDigitalSignature s100SEDigitalSignature = new S100SEDigitalSignature();
+            s100SEDigitalSignature.setId(id.toString());
+            s100SEDigitalSignature.setCertificateRef("ref");
+            s100SEDigitalSignature.setValue("signature".getBytes());
+            return s100SEDigitalSignature;
+        });
 
         //====================================================================//
-        //           The S100 Exchange Catalogue Identifier                   //
+        //              Load a test Exchange Set Catalogue XML                //
         //====================================================================//
-        S100ExchangeCatalogueIdentifier s100ExchangeCatalogueIdentifier = new S100ExchangeCatalogueIdentifier();
-        s100ExchangeCatalogueIdentifier.setIdentifier(UUID.fromString("2d7c8116-75a9-4fb8-b1b3-7a698d416b97").toString());
-        s100ExchangeCatalogueIdentifier.setDateTime(LocalDateTime.parse("2001-01-01T00:00:00.000Z", this.dateTimeFormat));
-        this.s100ExchangeCatalogue.setIdentifier(s100ExchangeCatalogueIdentifier);
+        final InputStream inES = ClassLoader.getSystemResourceAsStream("s100-exchange-set.xml");
+        this.s100ExchangeSetXml = IOUtils.toString(inES, StandardCharsets.UTF_8);
+        //====================================================================//
 
         //====================================================================//
-        //             The S100 Exchange Catalogue Contact                    //
+        //                   Load a test X.509 Certificate                    //
         //====================================================================//
-        S100CataloguePointofContact s100CataloguePointofContact = new S100CataloguePointofContact();
-        s100CataloguePointofContact.setOrganization(S100ExchangeSetUtils.createCharacterString("GRAD"));
-        S100AddressType s100AddressType = new S100AddressType();
-        s100AddressType.setUuid(UUID.fromString("40267999-1ee4-4633-b32e-899031207e1f").toString());
-        s100AddressType.setIsoType(this.isoType);
-        s100AddressType.setId("Test Address");
-        s100AddressType.setCity(S100ExchangeSetUtils.createCharacterString("Harwich"));
-        s100AddressType.setCountry(S100ExchangeSetUtils.createCharacterString("UK"));
-        s100AddressType.setAdministrativeArea(S100ExchangeSetUtils.createCharacterString("England and Wales"));
-        s100CataloguePointofContact.setAddress(s100AddressType);
-        S100PhoneType s100PhoneType = new S100PhoneType();
-        s100PhoneType.setIsoType(this.isoType);
-        s100PhoneType.setId("Test Phone");
-        s100PhoneType.setUuid(UUID.fromString("4f92d85a-fd3d-4438-8983-dac15c14d435").toString());
-        s100PhoneType.setNumber(S100ExchangeSetUtils.createCharacterString("01255245000"));
-        s100CataloguePointofContact.setPhone(s100PhoneType);
-        this.s100ExchangeCatalogue.setContact(s100CataloguePointofContact);
+        final InputStream inCert = ClassLoader.getSystemResourceAsStream("test.pem");
+        final String inString = new String(inCert.readAllBytes(), StandardCharsets.UTF_8);
+        X509Certificate certificate = this.s100ExchangeCatalogueBuilder.getCertFromPem(inString.getBytes());
+        //====================================================================//
 
         //====================================================================//
         //         The S100 Exchange Catalogue product Specification          //
         //====================================================================//
-        S100ProductSpecification s100ProductSpecification = new S100ProductSpecification();
+        final S100ProductSpecification s100ProductSpecification = new S100ProductSpecification();
         s100ProductSpecification.setName("S-125");
         s100ProductSpecification.setProductIdentifier("S-125");
         s100ProductSpecification.setNumber(BigInteger.ONE);
         s100ProductSpecification.setDate(LocalDate.parse("2022-10-22", this.dateFormat));
         s100ProductSpecification.setCompliancyCategory(S100CompliancyCategory.CATEGORY_1);
-        this.s100ExchangeCatalogue.setProductSpecifications(Collections.singletonList(s100ProductSpecification));
-
-
         //====================================================================//
-        //           The S100 Exchange Catalogue Discovery Metadata           //
-        //====================================================================//
-        S100ExchangeCatalogue.DatasetDiscoveryMetadata datasetDiscoveryMetadata = new S100ExchangeCatalogue.DatasetDiscoveryMetadata();
-        S100DatasetDiscoveryMetadata metadata = new S100DatasetDiscoveryMetadata();
-        metadata.setFileName("testFile");
-        metadata.setDatasetID("testFileId");
-        metadata.setDescription(S100ExchangeSetUtils.createCharacterString("description"));
-        metadata.setCompressionFlag(false);
-        metadata.setDataProtection(false);
-        metadata.setProtectionScheme(S100ProtectionScheme.S_100_P_15);
-        metadata.setCopyright(true);
-        S100ClassificationCodePropertyType s100ClassificationCodePropertyType = new S100ClassificationCodePropertyType();
-        final CodeListValueType classificationCodeListValueType = new CodeListValueType();
-        classificationCodeListValueType.setCodeList("classificationList");
-        classificationCodeListValueType.setCodeSpace("classificationSpace");
-        classificationCodeListValueType.setCodeListValue("classificationListValue");
-        classificationCodeListValueType.setValue("classificationValue");
-        s100ClassificationCodePropertyType.setMDClassificationCode(classificationCodeListValueType);
-        metadata.setClassification(s100ClassificationCodePropertyType);
-        metadata.setPurpose(S100Purpose.NEW_DATASET);
-        metadata.setNotForNavigation(false);
-        metadata.setEditionNumber(BigInteger.ONE);
-        metadata.setUpdateNumber(BigInteger.ZERO);
-        metadata.setUpdateApplicationDate(LocalDate.parse("2022-10-22", this.dateFormat));
-        metadata.setIssueDate(LocalDate.parse("2022-10-22", this.dateFormat));
-        metadata.setBoundingBox(null);
-        metadata.setTemporalExtent(null);
-        final CIResponsibilityPropertyType ciResponsibilityPropertyType = new CIResponsibilityPropertyType();
-        final CIResponsibilityType ciResponsibilityType = new CIResponsibilityType();
-        final CIRoleCodePropertyType ciRoleCodePropertyType= new CIRoleCodePropertyType();
-        final CodeListValueType ciRoleCodeListValueType = new CodeListValueType();
-        ciRoleCodeListValueType.setCodeList(null);
-        ciRoleCodeListValueType.setCodeSpace(null);
-        ciRoleCodeListValueType.setCodeListValue("custodian");
-        ciRoleCodeListValueType.setValue("custodian");
-        ciRoleCodePropertyType.setCIRoleCode(ciRoleCodeListValueType);
-        ciResponsibilityType.setRole(ciRoleCodePropertyType);
-        final CIOrganisationType ciOrganisationType = new CIOrganisationType();
-        ciOrganisationType.setName(null);
-        final AbstractCIPartyPropertyType abstractCIPartyPropertyType = new AbstractCIPartyPropertyType();
-        abstractCIPartyPropertyType.setAbstractCIParty(
-                new org.iso.standards.iso._19115.__3.cit._2.ObjectFactory()
-                        .createCIOrganisation(ciOrganisationType)
-        );
-        ciResponsibilityType.setParties(Collections.singletonList(abstractCIPartyPropertyType));
-        ciResponsibilityPropertyType.setCIResponsibility(ciResponsibilityType);
-        metadata.setProducingAgency(ciResponsibilityPropertyType);
-        metadata.setProducerCode("XX00");
-        metadata.setMetadataDateStamp(LocalDate.parse("2022-10-22", this.dateFormat));
-        metadata.setReplacedData(false);
-        datasetDiscoveryMetadata.setS100DatasetDiscoveryMetadatas(Collections.singletonList(metadata));
-        this.s100ExchangeCatalogue.setDatasetDiscoveryMetadata(datasetDiscoveryMetadata);
+
+        // Initialise the Dataset
+        this.s100ExchangeCatalogue = this.s100ExchangeCatalogueBuilder
+                .setIdentifier("Test Exchange Set")
+                .setDataServerIdentifier("2d7c8116-75a9-4fb8-b1b3-7a698d416b97")
+                .setOrganization("GRAD")
+                .setElectronicMailAddresses(Collections.singletonList("test@gla-rad.org"))
+                .setPhone("+44 1255 245000")
+                .setPhoneType(TelephoneType.VOICE)
+                .setCity("Harwich")
+                .setPostalCode("postalCode")
+                .setCountry("UK and Ireland")
+                .setLocales(Collections.singletonList(Locale.UK))
+                .setAdministrativeArea("England, Wales, Scotland and the whole of Ireland")
+                .setDescription("Test Exchange Set Description.")
+                .setComment("Test Exchange Set Comment.")
+                .setProductSpecification(Collections.singletonList(s100ProductSpecification))
+                .setCertificates(Collections.singletonMap("CRT1", certificate))
+                .addDatasetMetadata(this.s100DatasetDiscoveryMetadataBuilder
+                        .setFileName("file:/dataset.XML")
+                        .setFileContent("dataset".getBytes())
+                        .setDatasetID("urn:mrn:gla:grad:s125:datasets:XXXX")
+                        .setDescription("description")
+                        .setCompressionFlag(false)
+                        .setDataProtection(false)
+                        .setProtectionScheme(S100ProtectionScheme.S_100_P_15)
+                        .setCopyright(true)
+                        .setClassification(SecurityClassification.UNCLASSIFIED)
+                        .setPurpose(S100Purpose.NEW_DATASET)
+                        .setNotForNavigation(true)
+                        .setSpecificUsage("testing")
+                        .setEditionNumber(BigInteger.ONE)
+                        .setUpdateNumber(BigInteger.ZERO)
+                        .setUpdateApplicationDate(LocalDate.parse("2023-01-01", this.dateFormat))
+                        .setIssueDate(LocalDate.parse("2023-01-02", this.dateFormat))
+                        .setIssueTime(LocalTime.parse("00:00:00", this.timeFormat))
+                        .setProductSpecification(null)
+                        .setProducingAgency("producingAgency")
+                        .setProducingAgencyRole(RoleCode.ORIGINATOR)
+                        .setProducerCode("producerCode")
+                        .setEncodingFormat(S100EncodingFormat.GML)
+                        .setDataCoverages(null)
+                        .setComment("comment")
+                        .setMetadataDateStamp(LocalDate.parse("2023-01-03", this.dateFormat))
+                        .setReplacedData(false)
+                        .setNavigationPurposes(Collections.singletonList(S100NavigationPurpose.OVERVIEW))
+                        .setMaintenanceFrequency(MaintenanceFrequency.CONTINUAL)
+                        .setMaintenanceDate(LocalDate.parse("2023-01-03", this.dateFormat))
+                        .setMaintenancePeriod(Duration.ofDays(100))
+                        .build())
+                .build();
+    }
+
+    /**
+     * Test that we can successfully create a character string from a simple
+     * Java string.
+     */
+    @Test
+    void testCreateCharacterString() {
+        CharacterStringPropertyType cspt = S100ExchangeSetUtils.createCharacterStringPropertyType("test");
+
+        // Assert that the CharacterStringPropertyType is not empty and seems valid
+        assertNotNull(cspt);
+        assertNotNull(cspt.getCharacterString());
+        assertEquals("test", cspt.getCharacterString().getValue());
+    }
+
+    /**
+     * Test that for a null string the CharacterStringPropertyType generation
+     * method will return an empty but valid object.
+     */
+    @Test
+    void testCreateCharacterStringNull() {
+        CharacterStringPropertyType cspt = S100ExchangeSetUtils.createCharacterStringPropertyType(null);
+
+        // Assert that the CharacterStringPropertyType is not empty and seems valid
+        assertNotNull(cspt);
+        assertNotNull(cspt.getCharacterString());
+        assertNull(cspt.getCharacterString().getValue());
+    }
+
+    /**
+     * Test that we can successfully create a list of character strings from a
+     * simple list of Java strings.
+     */
+    @Test
+    void testCreateCharacterStringList() {
+        List<CharacterStringPropertyType> cspts = S100ExchangeSetUtils.createCharacterStringPropertyTypeList(Collections.singletonList("test"));
+
+        // Assert that the CharacterStringPropertyType is not empty and seems valid
+        assertNotNull(cspts);
+        assertNotNull(cspts.get(0));
+        assertEquals(1, cspts.size());
+        assertNotNull(cspts.get(0).getCharacterString());
+        assertEquals("test", cspts.get(0).getCharacterString().getValue());
+    }
+
+    /**
+     * The that for a null list, the CharacterStringPropertyType list generation
+     * method will return an empty list respectively.
+     * method will return an empty list respectively.
+     */
+    @Test
+    void testCreateCharacterStringListNull() {
+        List<CharacterStringPropertyType> cspts = S100ExchangeSetUtils.createCharacterStringPropertyTypeList(null);
+
+        // Assert that the CharacterStringPropertyType is not empty and seems valid
+        assertNotNull(cspts);
+        assertEquals(0, cspts.size());
     }
 
     /**
@@ -170,9 +232,21 @@ class S100ExchangeSetUtilsTest {
      */
     @Test
     void testMarchallS125() throws JAXBException {
-        String xml = S100ExchangeSetUtils.marshalS125(this.s100ExchangeCatalogue);
+        String xml = S100ExchangeSetUtils.marshalS100ExchangeSetCatalogue(this.s100ExchangeCatalogue);
+
+        // Assert the XML is not empty and seems valid
         assertNotNull(xml);
-        assertEquals(this.s100ExchangeSetXml, xml);
+
+        // The marshalling operation ofter messes up the namespace order so
+        // we might as well remove it before we continue with the one-to-one
+        // matching
+        String s100ExchangeSetXmlWithoutNamespaces = this.s100ExchangeSetXml
+                .replaceAll("S100_ExchangeCatalogue .+>","S100_ExchangeCatalogue>")
+                .replaceAll("ns\\d+:","");
+        String xmlWithoutNamespaces = xml
+                .replaceAll("S100_ExchangeCatalogue .+>","S100_ExchangeCatalogue>")
+                .replaceAll("ns\\d+:","");
+        assertEquals(s100ExchangeSetXmlWithoutNamespaces, xmlWithoutNamespaces);
     }
 
     /**
@@ -184,7 +258,7 @@ class S100ExchangeSetUtilsTest {
     @Test
     void testUnmarshalS125() throws JAXBException {
         // Unmarshall it to a G1128 service instance object
-        S100ExchangeCatalogue result = S100ExchangeSetUtils.unmarshallS125(this.s100ExchangeSetXml);
+        S100ExchangeCatalogue result = S100ExchangeSetUtils.unmarshallS100ExchangeSetCatalogue(this.s100ExchangeSetXml);
 
         // Assert all information is correct
         assertNotNull(result);
@@ -206,7 +280,7 @@ class S100ExchangeSetUtilsTest {
         assertNotNull(metadata.getDescription().getCharacterString());
         assertNotNull(metadata.getClassification());
         assertEquals(this.s100ExchangeCatalogue.getDatasetDiscoveryMetadata().getS100DatasetDiscoveryMetadatas().get(0).getPurpose(), metadata.getPurpose());
-        assertFalse(metadata.isNotForNavigation());
+        assertTrue(metadata.isNotForNavigation());
         assertEquals(this.s100ExchangeCatalogue.getDatasetDiscoveryMetadata().getS100DatasetDiscoveryMetadatas().get(0).getEditionNumber(), metadata.getEditionNumber());
         assertEquals(this.s100ExchangeCatalogue.getDatasetDiscoveryMetadata().getS100DatasetDiscoveryMetadatas().get(0).getUpdateNumber(), metadata.getUpdateNumber());
         assertEquals(this.s100ExchangeCatalogue.getDatasetDiscoveryMetadata().getS100DatasetDiscoveryMetadatas().get(0).getUpdateApplicationDate(), metadata.getUpdateApplicationDate());

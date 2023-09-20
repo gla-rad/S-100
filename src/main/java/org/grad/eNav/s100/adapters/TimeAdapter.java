@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 GLA Research and Development Directorate
+ * Copyright (c) 2023 GLA Research and Development Directorate
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,23 +14,24 @@
  * limitations under the License.
  */
 
-package org.grad.eNav.s100.utils;
+package org.grad.eNav.s100.adapters;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
 /**
- * The DateTime Adapter Class.
+ * The Time Adapter Class.
  *
- * This is used to translate between the java.time.LocalDateTime objects and the
- * XML dateTime elements.
+ * This is used to translate between the java.time.LocalTime objects and the XML
+ * time elements.
  *
  * @author Nikolaos Vastardis (email: Nikolaos.Vastardis@gla-rad.org)
  */
-public class DateTimeAdapter extends XmlAdapter<String, LocalDateTime> {
+public class TimeAdapter extends XmlAdapter<String, LocalTime> {
 
-    private final DateTimeFormatter dateFormat = DateTimeFormatter.ISO_DATE;
+    private final DateTimeFormatter dateFormat = DateTimeFormatter.ISO_TIME;
 
     /**
      * Marshall a Java Date object into an XML element.
@@ -39,7 +40,7 @@ public class DateTimeAdapter extends XmlAdapter<String, LocalDateTime> {
      * @return The XML element
      */
     @Override
-    public String marshal(LocalDateTime date) {
+    public String marshal(LocalTime date) {
         synchronized (dateFormat) {
             return dateFormat.format(date);
         }
@@ -52,9 +53,9 @@ public class DateTimeAdapter extends XmlAdapter<String, LocalDateTime> {
      * @return The Java Date object
      */
     @Override
-    public LocalDateTime unmarshal(String xml) {
+    public LocalTime unmarshal(String xml) {
         synchronized (dateFormat) {
-            return LocalDateTime.parse(xml, dateFormat);
+            return LocalTime.parse(xml, dateFormat);
         }
     }
 

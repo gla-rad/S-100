@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 GLA Research and Development Directorate
+ * Copyright (c) 2023 GLA Research and Development Directorate
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-package org.grad.eNav.s100.utils;
+package org.grad.eNav.s100.adapters;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 /**
- * The Date Adapter Class.
+ * The DateTime Adapter Class.
  *
- * This is used to translate between the java.time.LocalDate objects and the XML
- * date elements.
+ * This is used to translate between the java.time.LocalDateTime objects and the
+ * XML dateTime elements.
  *
  * @author Nikolaos Vastardis (email: Nikolaos.Vastardis@gla-rad.org)
  */
-public class DateAdapter extends XmlAdapter<String, LocalDate> {
+public class DateTimeAdapter extends XmlAdapter<String, LocalDateTime> {
 
     private final DateTimeFormatter dateFormat = DateTimeFormatter.ISO_DATE;
 
@@ -39,7 +39,7 @@ public class DateAdapter extends XmlAdapter<String, LocalDate> {
      * @return The XML element
      */
     @Override
-    public String marshal(LocalDate date) {
+    public String marshal(LocalDateTime date) {
         synchronized (dateFormat) {
             return dateFormat.format(date);
         }
@@ -52,9 +52,9 @@ public class DateAdapter extends XmlAdapter<String, LocalDate> {
      * @return The Java Date object
      */
     @Override
-    public LocalDate unmarshal(String xml) {
+    public LocalDateTime unmarshal(String xml) {
         synchronized (dateFormat) {
-            return LocalDate.parse(xml, dateFormat);
+            return LocalDateTime.parse(xml, dateFormat);
         }
     }
 
