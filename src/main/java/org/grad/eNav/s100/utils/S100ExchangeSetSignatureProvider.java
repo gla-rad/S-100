@@ -17,6 +17,7 @@
 package org.grad.eNav.s100.utils;
 
 import _int.iho.s100.catalog._5_0.S100SEDigitalSignature;
+import _int.iho.s100.catalog._5_0.S100SEDigitalSignatureReference;
 
 /**
  * The S-100 Exchange Set Signature Provider Interface.
@@ -28,6 +29,6 @@ import _int.iho.s100.catalog._5_0.S100SEDigitalSignature;
  */
 public interface S100ExchangeSetSignatureProvider {
 
-    S100SEDigitalSignature generateSignature(Object id, String algorithm, byte[] payload);
+    S100SEDigitalSignature generateSignature(Object id, S100SEDigitalSignatureReference algorithm, byte[] payload);
 
 }

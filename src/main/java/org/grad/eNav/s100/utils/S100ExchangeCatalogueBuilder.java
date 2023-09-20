@@ -17,15 +17,13 @@
 package org.grad.eNav.s100.utils;
 
 import _int.iho.s100.catalog._5_0.*;
-import _int.iho.s100.catalog._5_0.ObjectFactory;
 import org.grad.eNav.s100.enums.CodeListValueTypeProvider;
 import org.grad.eNav.s100.enums.TelephoneType;
 import org.iso.standards.iso._19115.__3.cit._2.CITelephoneTypeCodePropertyType;
-import org.iso.standards.iso._19115.__3.lan._1.*;
+import org.iso.standards.iso._19115.__3.lan._1.PTLocalePropertyType;
 
 import javax.xml.bind.JAXBException;
 import java.io.ByteArrayInputStream;
-import java.nio.charset.StandardCharsets;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
@@ -42,30 +40,6 @@ import java.util.*;
  * @author Nikolaos Vastardis (email: Nikolaos.Vastardis@gla-rad.org)
  */
 public class S100ExchangeCatalogueBuilder {
-
-    /**
-     * The Telephone Type namespace/list for use in the telephone type codes.
-     */
-    public static final String TELEPHONE_TYPE_NAMESPACE = "RFC7970";
-    public static final String TELEPHONE_TYPE_LIST = "https://www.iana.org/assignments/iodef2/iodef2.xhtml#telephone-type";
-
-    /**
-     * The Language Code namespace/list for use in the language codes.
-     */
-    public static final String LANGUAGE_NAMESPACE = "ISO 639-2/T";
-    public static final String LANGUAGE_LIST = null;
-
-    /**
-     * The Country Code namespace/list for use in the country codes.
-     */
-    public static final String COUNTRY_NAMESPACE = "ISO 3166-2";
-    public static final String COUNTRY_LIST = null;
-
-    /**
-     * The Character Set Encoding namespace/list for use in the character set encoding codes.
-     */
-    public static final String CHARACTER_ENCODING_NAMESPACE = null;
-    public static final String CHARACTER_ENCODING_LIST = "http://www.iana.org/assignments/character-sets";
 
     // Class Variables
     protected String identifier;
@@ -93,6 +67,7 @@ public class S100ExchangeCatalogueBuilder {
 
     // Objects Factories
     private final ObjectFactory objectFactory;
+    private final org.iso.standards.iso._19115.__3.lan._1.ObjectFactory lanObjectFactory;
 
     // Signature Provider
     private final S100ExchangeSetSignatureProvider signatureProvider;
@@ -107,8 +82,9 @@ public class S100ExchangeCatalogueBuilder {
 
         // Initialise the object factories
         this.objectFactory = new ObjectFactory();
+        this.lanObjectFactory = new org.iso.standards.iso._19115.__3.lan._1.ObjectFactory();
 
-        //Initialise the certificates map
+        // Initialise the certificates map
         this.certificateMap = new HashMap<>();
 
         // Initialise the metadata lists
@@ -424,29 +400,9 @@ public class S100ExchangeCatalogueBuilder {
         // ================================================================== //
         for (Locale locale : this.locales) {
             PTLocalePropertyType ptLocaleProperty = new PTLocalePropertyType();
-            PTLocaleType ptLocaleValue = new PTLocaleType();
-            LanguageCodePropertyType languageCodePropertyType = new LanguageCodePropertyType();
-            languageCodePropertyType.setLanguageCode(S100ExchangeSetUtils.generateCodeListValueType(
-                    LANGUAGE_LIST,
-                    LANGUAGE_NAMESPACE,
-                    locale.getISO3Language(),
-                    locale.getDisplayLanguage()));
-            ptLocaleValue.setLanguage(languageCodePropertyType);
-            CountryCodePropertyType countryCodePropertyType = new CountryCodePropertyType();
-            countryCodePropertyType.setCountryCode(S100ExchangeSetUtils.generateCodeListValueType(
-                    COUNTRY_LIST,
-                    COUNTRY_NAMESPACE,
-                    locale.getISO3Country(),
-                    locale.getDisplayCountry()));
-            ptLocaleValue.setCountry(countryCodePropertyType);
-            MDCharacterSetCodePropertyType mdCharacterSetCodePropertyType = new MDCharacterSetCodePropertyType();
-            mdCharacterSetCodePropertyType.setMDCharacterSetCode(S100ExchangeSetUtils.generateCodeListValueType(
-                    CHARACTER_ENCODING_LIST,
-                    CHARACTER_ENCODING_NAMESPACE,
-                    StandardCharsets.UTF_8.name(),
-                    StandardCharsets.UTF_8.displayName()));
-            ptLocaleValue.setCharacterEncoding(mdCharacterSetCodePropertyType);
-            ptLocaleProperty.setPTLocale(new org.iso.standards.iso._19115.__3.lan._1.ObjectFactory().createPTLocale(ptLocaleValue));
+            ptLocaleProperty.setPTLocale(this.lanObjectFactory.createPTLocale(
+                    S100ExchangeSetUtils.createPTLocaleType(locale)
+            ));
 
             // Check if to add as the default or as another locale
             if (Objects.isNull(exchangeCatalogue.getDefaultLocale())) {

@@ -37,8 +37,8 @@ import static org.junit.jupiter.api.Assertions.*;
 class S100ExchangeCatalogueBuilderTest {
 
     // Test Variables
-    S100ExchangeCatalogueBuilder s100ExchangeCatalogueBuilder;
-    S100DatasetDiscoveryMetadataBuilder s100DatasetDiscoveryMetadataBuilder;
+    private S100ExchangeCatalogueBuilder s100ExchangeCatalogueBuilder;
+    private S100DatasetDiscoveryMetadataBuilder s100DatasetDiscoveryMetadataBuilder;
 
     // Fixed Variables
     private DateTimeFormatter timeFormat = DateTimeFormatter.ISO_TIME;
@@ -224,6 +224,7 @@ class S100ExchangeCatalogueBuilderTest {
         assertNotNull(exchangeCatalogue.getContact().getAddress().getAdministrativeArea().getCharacterString());
         assertEquals("adminArea", exchangeCatalogue.getContact().getAddress().getAdministrativeArea().getCharacterString().getValue());
 
+        // Assess the locales
         assertNotNull(exchangeCatalogue.getDefaultLocale());
         assertNotNull(exchangeCatalogue.getDefaultLocale().getPTLocale().getValue());
         assertNotNull(exchangeCatalogue.getDefaultLocale().getPTLocale().getValue().getLanguage());
@@ -238,6 +239,7 @@ class S100ExchangeCatalogueBuilderTest {
         assertNotNull(exchangeCatalogue.getOtherLocales());
         assertTrue(exchangeCatalogue.getOtherLocales().isEmpty());
 
+        // Assess the description and comment
         assertNotNull(exchangeCatalogue.getExchangeCatalogueDescription());
         assertNotNull(exchangeCatalogue.getExchangeCatalogueDescription().getCharacterString());
         assertEquals("description", exchangeCatalogue.getExchangeCatalogueDescription().getCharacterString().getValue());
@@ -245,6 +247,7 @@ class S100ExchangeCatalogueBuilderTest {
         assertNotNull(exchangeCatalogue.getExchangeCatalogueComment().getCharacterString());
         assertEquals("comment", exchangeCatalogue.getExchangeCatalogueComment().getCharacterString().getValue());
 
+        // Assess the certificates
         assertNotNull(exchangeCatalogue.getProductSpecifications());
         assertEquals(1, exchangeCatalogue.getProductSpecifications().size());
         assertNotNull(exchangeCatalogue.getCertificates());
@@ -256,6 +259,7 @@ class S100ExchangeCatalogueBuilderTest {
         assertEquals("CRT1", exchangeCatalogue.getCertificates().get(0).getCertificates().get(0).getId());
         assertNotNull(exchangeCatalogue.getCertificates().get(0).getCertificates().get(0).getValue());
 
+        // Assess the file metadata
         assertNotNull(exchangeCatalogue.getDatasetDiscoveryMetadata());
         assertNotNull(exchangeCatalogue.getDatasetDiscoveryMetadata().getS100DatasetDiscoveryMetadatas());
         assertEquals(1, exchangeCatalogue.getDatasetDiscoveryMetadata().getS100DatasetDiscoveryMetadatas().size());

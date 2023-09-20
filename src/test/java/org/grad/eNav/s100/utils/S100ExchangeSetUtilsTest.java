@@ -22,9 +22,9 @@ import org.grad.eNav.s100.enums.MaintenanceFrequency;
 import org.grad.eNav.s100.enums.RoleCode;
 import org.grad.eNav.s100.enums.SecurityClassification;
 import org.grad.eNav.s100.enums.TelephoneType;
-import org.iso.standards.iso._19115.__3.cit._2.*;
 import org.iso.standards.iso._19115.__3.gco._1.CharacterStringPropertyType;
 import org.iso.standards.iso._19115.__3.gco._1.CodeListValueType;
+import org.iso.standards.iso._19115.__3.lan._1.PTLocaleType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -35,16 +35,13 @@ import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.text.ParseException;
 import java.time.Duration;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -56,10 +53,7 @@ class S100ExchangeSetUtilsTest {
     private S100ExchangeCatalogue s100ExchangeCatalogue;
     private String s100ExchangeSetXml;
 
-
     // Fixed Variables
-    private org.iso.standards.iso._19115.__3.gco._1.ObjectFactory gcoObjectFactory = new org.iso.standards.iso._19115.__3.gco._1.ObjectFactory();
-    private org.iso.standards.iso._19115.__3.lan._1.ObjectFactory lanObjectFactory = new org.iso.standards.iso._19115.__3.lan._1.ObjectFactory();
     private String isoType = "ISO 19103:2015";
     private DateTimeFormatter timeFormat = DateTimeFormatter.ISO_TIME;
     private DateTimeFormatter dateFormat = DateTimeFormatter.ISO_DATE;
@@ -172,7 +166,7 @@ class S100ExchangeSetUtilsTest {
      */
     @Test
     void testCreateCharacterString() {
-        CharacterStringPropertyType cspt = S100ExchangeSetUtils.createCharacterStringPropertyType("test");
+        final CharacterStringPropertyType cspt = S100ExchangeSetUtils.createCharacterStringPropertyType("test");
 
         // Assert that the CharacterStringPropertyType is not empty and seems valid
         assertNotNull(cspt);
@@ -186,7 +180,7 @@ class S100ExchangeSetUtilsTest {
      */
     @Test
     void testCreateCharacterStringNull() {
-        CharacterStringPropertyType cspt = S100ExchangeSetUtils.createCharacterStringPropertyType(null);
+        final CharacterStringPropertyType cspt = S100ExchangeSetUtils.createCharacterStringPropertyType(null);
 
         // Assert that the CharacterStringPropertyType is not empty and seems valid
         assertNotNull(cspt);
@@ -200,7 +194,7 @@ class S100ExchangeSetUtilsTest {
      */
     @Test
     void testCreateCharacterStringList() {
-        List<CharacterStringPropertyType> cspts = S100ExchangeSetUtils.createCharacterStringPropertyTypeList(Collections.singletonList("test"));
+        final List<CharacterStringPropertyType> cspts = S100ExchangeSetUtils.createCharacterStringPropertyTypeList(Collections.singletonList("test"));
 
         // Assert that the CharacterStringPropertyType is not empty and seems valid
         assertNotNull(cspts);
@@ -217,11 +211,67 @@ class S100ExchangeSetUtilsTest {
      */
     @Test
     void testCreateCharacterStringListNull() {
-        List<CharacterStringPropertyType> cspts = S100ExchangeSetUtils.createCharacterStringPropertyTypeList(null);
+        final List<CharacterStringPropertyType> cspts = S100ExchangeSetUtils.createCharacterStringPropertyTypeList(null);
 
         // Assert that the CharacterStringPropertyType is not empty and seems valid
         assertNotNull(cspts);
         assertEquals(0, cspts.size());
+    }
+
+    /**
+     * Test that we can successfully generate the S-100 Code List Value type
+     * objects provided that we pass the correct parameters.
+     */
+    @Test
+    void testCreateCodeListValueType() {
+        // Create the S-100 Code List Value Type object
+        final CodeListValueType codeListValueType = S100ExchangeSetUtils.createCodeListValueType(
+                "list",
+                "space",
+                "code",
+                "value"
+        );
+
+        // Assess the result
+        assertNotNull(codeListValueType);
+        assertEquals("list", codeListValueType.getCodeList());
+        assertEquals("space", codeListValueType.getCodeSpace());
+        assertEquals("code", codeListValueType.getCodeListValue());
+        assertEquals("value", codeListValueType.getValue());
+    }
+
+    /**
+     * Test that provided a valid Java local we can successfully generate an
+     * S-100 PTLocaleType object.
+     */
+    @Test
+    void testCreatePTLocaleType() {
+        // Generate the S-100 PT Locale Type
+        final PTLocaleType ptLocaleType = S100ExchangeSetUtils.createPTLocaleType(Locale.UK);
+
+        // Assess the result
+        assertNotNull(ptLocaleType);
+        assertNotNull(ptLocaleType.getLanguage());
+        assertNotNull(ptLocaleType.getLanguage().getLanguageCode());
+        assertEquals(Locale.UK.getDisplayLanguage(), ptLocaleType.getLanguage().getLanguageCode().getValue());
+        assertNotNull(ptLocaleType.getCountry());
+        assertNotNull(ptLocaleType.getCountry().getCountryCode());
+        assertEquals(Locale.UK.getDisplayCountry(), ptLocaleType.getCountry().getCountryCode().getValue());
+        assertNotNull(ptLocaleType.getCharacterEncoding());
+        assertNotNull(ptLocaleType.getCharacterEncoding().getMDCharacterSetCode());
+        assertEquals(StandardCharsets.UTF_8.displayName(), ptLocaleType.getCharacterEncoding().getMDCharacterSetCode().getValue());
+    }
+
+    /**
+     * Test that provided a null Java Locale this the S-100 Utils function will
+     * return a null output.
+     */
+    @Test
+    void testCreatePTLocaleTypeNull() {
+        // Generate the S-100 PT Locale Type
+        PTLocaleType ptLocaleType = S100ExchangeSetUtils.createPTLocaleType(null);
+
+        assertNull(ptLocaleType);
     }
 
     /**

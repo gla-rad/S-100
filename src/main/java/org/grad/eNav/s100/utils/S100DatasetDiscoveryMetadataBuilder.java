@@ -596,13 +596,36 @@ public class S100DatasetDiscoveryMetadataBuilder {
         metadata.setMetadataDateStamp(Optional.ofNullable(this.metadataDateStamp)
                 .orElse(this.issueDate));
 
-        // Sign the dataset file if detected
+        //====================================================================//
+        //                        METADATA SIGNATURES                         //
+        //====================================================================//
+        // First choose the signature reference to be used
+        final S100SEDigitalSignatureReference signatureReference = Optional.ofNullable(this.digitalSignatureReference)
+                .map(S100SEDigitalSignatureReferencePropertyType::getValue)
+                .orElse(S100SEDigitalSignatureReference.DSA);
+        // And populate the metadata
+        final S100SEDigitalSignatureReferencePropertyType digitalSignatureReferencePropertyType = new S100SEDigitalSignatureReferencePropertyType();
+        digitalSignatureReferencePropertyType.setValue(signatureReference);
+        metadata.setDigitalSignatureReference(digitalSignatureReferencePropertyType);
+
+        // Sign the dataset file if a provider detected
         if(Objects.nonNull(this.signatureProvider)) {
-            final S100SEDigitalSignature signature = this.signatureProvider.generateSignature(this.fileName, "DSA", this.fileContent);
+            // Generate the signature
+            final S100SEDigitalSignature signature = this.signatureProvider.generateSignature(
+                    this.fileName,
+                    signatureReference,
+                    this.fileContent);
+
+            // And add it to the metadata
             final S100DatasetDiscoveryMetadata.DigitalSignatureValue digitalSignatureValue = new S100DatasetDiscoveryMetadata.DigitalSignatureValue();
             digitalSignatureValue.setS100SEDigitalSignature(this.objectFactory.createS100SEDigitalSignature(signature));
             metadata.getDigitalSignatureValues().add(digitalSignatureValue);
         }
+        // Or use the existing signatures if provided
+        else if(Objects.nonNull(this.digitalSignatureValues)) {
+            metadata.getDigitalSignatureValues().addAll(this.digitalSignatureValues);
+        }
+        //====================================================================//
 
         // And return the constructed metadata object
         return metadata;

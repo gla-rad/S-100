@@ -20,13 +20,16 @@ import _int.iho.s100.catalog._5_0.S100ExchangeCatalogue;
 import org.iso.standards.iso._19115.__3.gco._1.CharacterStringPropertyType;
 import org.iso.standards.iso._19115.__3.gco._1.CodeListValueType;
 import org.iso.standards.iso._19115.__3.gco._1.ObjectFactory;
+import org.iso.standards.iso._19115.__3.lan._1.CountryCodePropertyType;
+import org.iso.standards.iso._19115.__3.lan._1.LanguageCodePropertyType;
+import org.iso.standards.iso._19115.__3.lan._1.MDCharacterSetCodePropertyType;
+import org.iso.standards.iso._19115.__3.lan._1.PTLocaleType;
 
 import javax.xml.bind.*;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 
 /**
  * The S-100 Exchange Set Utility Class.
@@ -37,6 +40,25 @@ import java.util.Optional;
  * @author Nikolaos Vastardis (email: Nikolaos.Vastardis@gla-rad.org)
  */
 public class S100ExchangeSetUtils {
+
+    /**
+     * The Language Code namespace/list for use in the language codes.
+     */
+    public static final String LANGUAGE_NAMESPACE = "ISO 639-2/T";
+    public static final String LANGUAGE_LIST = null;
+
+    /**
+     * The Country Code namespace/list for use in the country codes.
+     */
+    public static final String COUNTRY_NAMESPACE = "ISO 3166-2";
+    public static final String COUNTRY_LIST = null;
+
+    /**
+     * The Character Set Encoding namespace/list for use in the character set encoding codes.
+     */
+    public static final String CHARACTER_ENCODING_NAMESPACE = null;
+    public static final String CHARACTER_ENCODING_LIST = "http://www.iana.org/assignments/character-sets";
+
 
     /**
      * A helper function to easily generate character string property types
@@ -77,13 +99,52 @@ public class S100ExchangeSetUtils {
      * @param input the actual value of the code list value type
      * @return the populated code list value type object
      */
-    public static CodeListValueType generateCodeListValueType(String list, String space, String code, String input) {
+    public static CodeListValueType createCodeListValueType(String list, String space, String code, String input) {
         final CodeListValueType codeListValueType = new CodeListValueType();
         codeListValueType.setCodeList(list);
         codeListValueType.setCodeSpace(space);
         codeListValueType.setCodeListValue(code);
         codeListValueType.setValue(input);
         return codeListValueType;
+    }
+
+    /**
+     * Based on the provided Java Locale this function will generate the S-100
+     * PTLocaleType object and return it.
+     *
+     * @param locale the java locale object
+     * @return the S-100 respective PTLocaleType object
+     */
+    public static PTLocaleType createPTLocaleType(Locale locale) {
+        // Sanity check
+        if(Objects.isNull(locale)) {
+            return null;
+        }
+
+        // Otherwise continue
+        final PTLocaleType ptLocaleValue = new PTLocaleType();
+        LanguageCodePropertyType languageCodePropertyType = new LanguageCodePropertyType();
+        languageCodePropertyType.setLanguageCode(S100ExchangeSetUtils.createCodeListValueType(
+                LANGUAGE_LIST,
+                LANGUAGE_NAMESPACE,
+                locale.getISO3Language(),
+                locale.getDisplayLanguage()));
+        ptLocaleValue.setLanguage(languageCodePropertyType);
+        CountryCodePropertyType countryCodePropertyType = new CountryCodePropertyType();
+        countryCodePropertyType.setCountryCode(S100ExchangeSetUtils.createCodeListValueType(
+                COUNTRY_LIST,
+                COUNTRY_NAMESPACE,
+                locale.getISO3Country(),
+                locale.getDisplayCountry()));
+        ptLocaleValue.setCountry(countryCodePropertyType);
+        MDCharacterSetCodePropertyType mdCharacterSetCodePropertyType = new MDCharacterSetCodePropertyType();
+        mdCharacterSetCodePropertyType.setMDCharacterSetCode(S100ExchangeSetUtils.createCodeListValueType(
+                CHARACTER_ENCODING_LIST,
+                CHARACTER_ENCODING_NAMESPACE,
+                StandardCharsets.UTF_8.name(),
+                StandardCharsets.UTF_8.displayName()));
+        ptLocaleValue.setCharacterEncoding(mdCharacterSetCodePropertyType);
+        return ptLocaleValue;
     }
 
     /**

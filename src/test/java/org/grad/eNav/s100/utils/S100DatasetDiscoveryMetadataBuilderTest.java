@@ -37,7 +37,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class S100DatasetDiscoveryMetadataBuilderTest {
 
     // Test Variables
-    S100DatasetDiscoveryMetadataBuilder s100DatasetDiscoveryMetadataBuilder;
+    private S100DatasetDiscoveryMetadataBuilder s100DatasetDiscoveryMetadataBuilder;
 
     // Fixed Variables
     private DateTimeFormatter timeFormat = DateTimeFormatter.ISO_TIME;
@@ -175,15 +175,15 @@ class S100DatasetDiscoveryMetadataBuilderTest {
         assertEquals(MaintenanceFrequency.CONTINUAL, this.s100DatasetDiscoveryMetadataBuilder.maintenanceFrequency);
         assertNull(this.s100DatasetDiscoveryMetadataBuilder.maintenanceDate);
         assertNull(this.s100DatasetDiscoveryMetadataBuilder.maintenancePeriod);
-
     }
+
     /**
      * Test that the S-100 Exchange Set Catalogue builder can correctly build
      * an exchange set XML if the appropriate parameters have been provided.
      */
     @Test
-    void testBuild() throws IOException, CertificateException, JAXBException {
-        // Perform the setting operations
+    void testBuild() {
+        // Perform the setting operations and build
         final S100DatasetDiscoveryMetadata metadata = this.s100DatasetDiscoveryMetadataBuilder
                 .setFileName("file:/dataset.XML")
                 .setFileContent("dataset".getBytes())
@@ -215,6 +215,7 @@ class S100DatasetDiscoveryMetadataBuilderTest {
                 .setMaintenanceFrequency(MaintenanceFrequency.CONTINUAL)
                 .build();
 
+        // Assess the main information
         assertNotNull(metadata);
         assertEquals("file:/dataset.XML", metadata.getFileName());
         assertEquals("urn:mrn:gla:grad:s125:datasets:XXXX", metadata.getDatasetID());
@@ -243,6 +244,7 @@ class S100DatasetDiscoveryMetadataBuilderTest {
         assertEquals(LocalTime.parse("00:00:00", this.timeFormat), metadata.getIssueTime());
         assertNull(metadata.getProductSpecification());
 
+        // Assess the producing agency information
         assertNotNull(metadata.getProducingAgency());
         assertNotNull(metadata.getProducingAgency().getCIResponsibility());
         assertNotNull(metadata.getProducingAgency().getCIResponsibility().getParties());
@@ -255,6 +257,7 @@ class S100DatasetDiscoveryMetadataBuilderTest {
         assertNotNull(metadata.getProducingAgency().getCIResponsibility().getRole().getCIRoleCode());
         assertEquals(RoleCode.ORIGINATOR.getValue(), metadata.getProducingAgency().getCIResponsibility().getRole().getCIRoleCode().getValue());
 
+        // Assess the maintenance information
         assertEquals("producerCode", metadata.getProducerCode());
         assertNotNull(metadata.getEncodingFormat());
         assertEquals(S100EncodingFormat.GML, metadata.getEncodingFormat().getValue());
@@ -276,6 +279,18 @@ class S100DatasetDiscoveryMetadataBuilderTest {
         assertNull(metadata.getResourceMaintenance().getMDMaintenanceInformation().getUserDefinedMaintenanceFrequency());
         assertNotNull(metadata.getResourceMaintenance().getMDMaintenanceInformation().getMaintenanceAndUpdateFrequency().getMDMaintenanceFrequencyCode());
         assertEquals(MaintenanceFrequency.CONTINUAL.getValue(), metadata.getResourceMaintenance().getMDMaintenanceInformation().getMaintenanceAndUpdateFrequency().getMDMaintenanceFrequencyCode().getValue());
+
+        // Assess the signature
+        assertNotNull(metadata.getDigitalSignatureReference());
+        assertNotNull(metadata.getDigitalSignatureReference().getValue());
+        assertEquals(S100SEDigitalSignatureReference.DSA, metadata.getDigitalSignatureReference().getValue());
+        assertNotNull(metadata.getDigitalSignatureValues());
+        assertEquals(1, metadata.getDigitalSignatureValues().size());
+        assertNotNull(metadata.getDigitalSignatureValues().get(0));
+        assertNotNull(metadata.getDigitalSignatureValues().get(0).getS100SEDigitalSignature());
+        assertNotNull(metadata.getDigitalSignatureValues().get(0).getS100SEDigitalSignature().getValue());
+        assertNotNull(metadata.getDigitalSignatureValues().get(0).getS100SEDigitalSignature().getValue().getValue());
+        assertEquals("signature".getBytes().length, metadata.getDigitalSignatureValues().get(0).getS100SEDigitalSignature().getValue().getValue().length);
     }
 
 }

@@ -59,7 +59,7 @@ public interface CodeListValueTypeProvider {
      * @return the constructed code list value type object
      */
     default CodeListValueType getCodeListValueType() {
-        return S100ExchangeSetUtils.generateCodeListValueType(
+        return S100ExchangeSetUtils.createCodeListValueType(
                 null, // no need for the list if we have the space
                 getSpace(),
                 getCode(),
