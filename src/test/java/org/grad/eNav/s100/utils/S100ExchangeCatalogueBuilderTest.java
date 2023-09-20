@@ -89,9 +89,6 @@ class S100ExchangeCatalogueBuilderTest {
         assertNull(this.s100ExchangeCatalogueBuilder.comment);
         assertNull(this.s100ExchangeCatalogueBuilder.productSpecifications);
         assertNotNull(this.s100ExchangeCatalogueBuilder.certificateMap);
-        assertNotNull(this.s100ExchangeCatalogueBuilder.datasetFileMetadataList);
-        assertNotNull(this.s100ExchangeCatalogueBuilder.supportFileMetadataList);
-        assertNotNull(this.s100ExchangeCatalogueBuilder.catalogueFileMetadataList);
     }
 
     /**
@@ -138,9 +135,6 @@ class S100ExchangeCatalogueBuilderTest {
         assertNotNull(this.s100ExchangeCatalogueBuilder.productSpecifications);
         assertEquals(1, this.s100ExchangeCatalogueBuilder.electronicMailAddresses.size());
         assertNotNull(this.s100ExchangeCatalogueBuilder.certificateMap);
-        assertNotNull(this.s100ExchangeCatalogueBuilder.datasetFileMetadataList);
-        assertNotNull(this.s100ExchangeCatalogueBuilder.supportFileMetadataList);
-        assertNotNull(this.s100ExchangeCatalogueBuilder.catalogueFileMetadataList);
     }
 
     /**
@@ -192,9 +186,9 @@ class S100ExchangeCatalogueBuilderTest {
                 .setComment("comment")
                 .setProductSpecification(Collections.singletonList(new S100ProductSpecification()))
                 .setCertificates(Collections.singletonMap("CRT1", certificate))
-                .addDatasetMetadata(new S100DatasetDiscoveryMetadata())
-                .addSupportFileMetadata(new S100SupportFileDiscoveryMetadata())
-                .addCatalogueMetadata(new S100CatalogueDiscoveryMetadata())
+                .addDatasetMetadata(builder -> new S100DatasetDiscoveryMetadata())
+                .addSupportFileMetadata(builder -> new S100SupportFileDiscoveryMetadata())
+                .addCatalogueMetadata(builder -> new S100CatalogueDiscoveryMetadata())
                 .build();
 
         // Assert that the building took place correctly

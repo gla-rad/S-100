@@ -125,7 +125,7 @@ class S100ExchangeSetUtilsTest {
                 .setComment("Test Exchange Set Comment.")
                 .setProductSpecification(Collections.singletonList(s100ProductSpecification))
                 .setCertificates(Collections.singletonMap("CRT1", certificate))
-                .addDatasetMetadata(this.s100DatasetDiscoveryMetadataBuilder
+                .addDatasetMetadata(builder -> builder
                         .setFileName("file:/dataset.XML")
                         .setDatasetID("urn:mrn:gla:grad:s125:datasets:XXXX")
                         .setDescription("description")

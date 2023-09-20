@@ -30,6 +30,7 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * The S100 Exchange Catalogue Builder Class.
@@ -60,17 +61,17 @@ public class S100ExchangeCatalogueBuilder {
     // Certificate Information
     protected Map<String, X509Certificate> certificateMap;
 
-    // Metadata Lists
-    protected final List<S100DatasetDiscoveryMetadata> datasetFileMetadataList;
-    protected final List<S100SupportFileDiscoveryMetadata> supportFileMetadataList;
-    protected final List<S100CatalogueDiscoveryMetadata> catalogueFileMetadataList;
-
     // Objects Factories
     private final ObjectFactory objectFactory;
     private final org.iso.standards.iso._19115.__3.lan._1.ObjectFactory lanObjectFactory;
 
     // Signature Provider
     private final S100ExchangeSetSignatureProvider signatureProvider;
+
+    // Metadata Providers
+    private List<DatasetDiscoveryMetadataProvider> datasetDiscoveryMetadataProviders;
+    private List<SupportFileDiscoveryMetadataProvider> supportFileDiscoveryMetadataProviders;
+    private List<CatalogueDiscoveryMetadataProvider> catalogueDiscoveryMetadataProviders;
 
     /**
      * Class Constructor.
@@ -87,10 +88,10 @@ public class S100ExchangeCatalogueBuilder {
         // Initialise the certificates map
         this.certificateMap = new HashMap<>();
 
-        // Initialise the metadata lists
-        this.datasetFileMetadataList = new ArrayList<>();
-        this.supportFileMetadataList = new ArrayList<>();
-        this.catalogueFileMetadataList = new ArrayList<>();
+        // And initialise the metadata provider lists
+        this.datasetDiscoveryMetadataProviders = new ArrayList<>();
+        this.supportFileDiscoveryMetadataProviders = new ArrayList<>();
+        this.catalogueDiscoveryMetadataProviders = new ArrayList<>();
     }
 
     /**
@@ -285,37 +286,35 @@ public class S100ExchangeCatalogueBuilder {
     }
 
     /**
-     * Appends a new dataset metadata entry.
+     * Appends a new dataset metadata provider.
      *
-     * @param datasetMetadata the dataset metadata entry to be appended
+     * @param provider the dataset metadata provider to be appended
      * @return the S100 exchange set catalogue builder
      */
-    public S100ExchangeCatalogueBuilder addDatasetMetadata(S100DatasetDiscoveryMetadata datasetMetadata) {
-        this.datasetFileMetadataList.add(datasetMetadata);
-        return this;
-    }
-
-
-
-    /**
-     * Appends a new support file metadata entry.
-     *
-     * @param supportFileMetadata the support file metadata entry to be appended
-     * @return the S100 exchange set catalogue builder
-     */
-    public S100ExchangeCatalogueBuilder addSupportFileMetadata(S100SupportFileDiscoveryMetadata supportFileMetadata) {
-        this.supportFileMetadataList.add(supportFileMetadata);
+    public S100ExchangeCatalogueBuilder addDatasetMetadata(DatasetDiscoveryMetadataProvider provider) {
+        this.datasetDiscoveryMetadataProviders.add(provider);
         return this;
     }
 
     /**
-     * Appends a new catalogue metadata entry.
+     * Appends a new support file metadata provider.
      *
-     * @param catalogueMetadata the catalogue metadata entry to be appended
+     * @param provider the support file metadata provider to be appended
      * @return the S100 exchange set catalogue builder
      */
-    public S100ExchangeCatalogueBuilder addCatalogueMetadata(S100CatalogueDiscoveryMetadata catalogueMetadata) {
-        this.catalogueFileMetadataList.add(catalogueMetadata);
+    public S100ExchangeCatalogueBuilder addSupportFileMetadata(SupportFileDiscoveryMetadataProvider provider) {
+        this.supportFileDiscoveryMetadataProviders.add(provider);
+        return this;
+    }
+
+    /**
+     * Appends a new catalogue metadata provider.
+     *
+     * @param provider the catalogue metadata provider to be appended
+     * @return the S100 exchange set catalogue builder
+     */
+    public S100ExchangeCatalogueBuilder addCatalogueMetadata(CatalogueDiscoveryMetadataProvider provider) {
+        this.catalogueDiscoveryMetadataProviders.add(provider);
         return this;
     }
 
@@ -437,13 +436,28 @@ public class S100ExchangeCatalogueBuilder {
         exchangeCatalogue.setCatalogueDiscoveryMetadata(
                 new S100ExchangeCatalogue.CatalogueDiscoveryMetadata()
         );
-        // Add the individual metadata lists
+        // Add more metadata lists from the providers if any
         exchangeCatalogue.getDatasetDiscoveryMetadata()
-                .setS100DatasetDiscoveryMetadatas(this.datasetFileMetadataList);
+                .getS100DatasetDiscoveryMetadatas()
+                .addAll(this.datasetDiscoveryMetadataProviders.stream()
+                        .map(provider -> provider.buildMetadata(
+                                new S100DatasetDiscoveryMetadataBuilder(this.signatureProvider)
+                        ))
+                        .toList());
         exchangeCatalogue.getSupportFileDiscoveryMetadata()
-                .setS100SupportFileDiscoveryMetadatas(this.supportFileMetadataList);
+                .getS100SupportFileDiscoveryMetadatas()
+                .addAll(this.supportFileDiscoveryMetadataProviders.stream()
+                        .map(provider -> provider.buildMetadata(
+                                new S100SupportFileDiscoveryMetadataBuilder(this.signatureProvider)
+                        ))
+                        .toList());
         exchangeCatalogue.getCatalogueDiscoveryMetadata()
-                .setS100CatalogueDiscoveryMetadatas(this.catalogueFileMetadataList);
+                .getS100CatalogueDiscoveryMetadatas()
+                .addAll(this.catalogueDiscoveryMetadataProviders.stream()
+                        .map(provider -> provider.buildMetadata(
+                                new S100CatalogueDiscoveryMetadataBuilder(this.signatureProvider)
+                        ))
+                        .toList());
         // ================================================================== //
 
         // And finally marshall to the XML output
@@ -476,4 +490,22 @@ public class S100ExchangeCatalogueBuilder {
         return (X509Certificate) CertificateFactory.getInstance("X.509").generateCertificate(ins);
     }
 
+    //========================================================================//
+    //               Metadata-Builder Function Interfaces                     //
+    // ---------------------------------------------------------------------- //
+    // For easier use the metadata builders the main exchange set catalogue   //
+    // builder provides a set of interfaces that can be used as providers by  //
+    // the implementation software to package a whole exchange set in a       //
+    // streamlined way.                                                       //
+    //========================================================================//
+    public interface DatasetDiscoveryMetadataProvider {
+        S100DatasetDiscoveryMetadata buildMetadata(S100DatasetDiscoveryMetadataBuilder builder);
+    }
+    public interface SupportFileDiscoveryMetadataProvider {
+        S100SupportFileDiscoveryMetadata buildMetadata(S100SupportFileDiscoveryMetadataBuilder builder);
+    }
+    public interface CatalogueDiscoveryMetadataProvider {
+        S100CatalogueDiscoveryMetadata buildMetadata(S100CatalogueDiscoveryMetadataBuilder builder);
+    }
+    //========================================================================//
 }
