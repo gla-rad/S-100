@@ -16,8 +16,8 @@
 
 package org.grad.eNav.s100.utils;
 
-import _int.iho.s100.catalog._5_0.*;
 import _int.iho.s100.catalog._5_0.ObjectFactory;
+import _int.iho.s100.catalog._5_0.*;
 import org.grad.eNav.s100.enums.CodeListValueTypeProvider;
 import org.grad.eNav.s100.enums.MaintenanceFrequency;
 import org.grad.eNav.s100.enums.RoleCode;
@@ -26,15 +26,11 @@ import org.iso.standards.iso._19115.__3.cit._2.*;
 import org.iso.standards.iso._19115.__3.gco._1.DatePropertyType;
 import org.iso.standards.iso._19115.__3.gco._1.TMPeriodDurationPropertyType;
 import org.iso.standards.iso._19115.__3.mcc._1.AbstractTypedDatePropertyType;
-import org.iso.standards.iso._19115.__3.mcc._1.AbstractTypedDateType;
 import org.iso.standards.iso._19115.__3.mmi._1.MDMaintenanceFrequencyCodePropertyType;
 import org.iso.standards.iso._19115.__3.mmi._1.MDMaintenanceInformationPropertyType;
 import org.iso.standards.iso._19115.__3.mmi._1.MDMaintenanceInformationType;
 import org.iso.standards.iso._19115.__3.mri._1.MDUsageType;
-import org.isotc211._2005.gco.CharacterStringPropertyType;
-import org.isotc211._2005.gmd.MDUsage;
 
-import java.io.*;
 import java.math.BigInteger;
 import java.time.Duration;
 import java.time.LocalDate;
@@ -47,7 +43,7 @@ import java.util.Optional;
 
 /**
  * The S100 Dataset Discovery Metadata Builder Class.
- *
+ * <p/>
  * This is a basic builder class that enables the generation of the S100
  * Dataset Discovery Metadata contents.
  *
@@ -57,7 +53,6 @@ public class S100DatasetDiscoveryMetadataBuilder {
 
     // Class Variables
     protected String fileName;
-    protected byte[] fileContent;
     protected String datasetID;
     protected String description;
     protected boolean compressionFlag;
@@ -95,7 +90,6 @@ public class S100DatasetDiscoveryMetadataBuilder {
     // Objects Factories
     private final ObjectFactory objectFactory;
     private final org.iso.standards.iso._19115.__3.cit._2.ObjectFactory citObjectFactory;
-    private final org.iso.standards.iso._19115.__3.gco._1.ObjectFactory gcoObjectFactory;
 
     // Signature Provider
     private final S100ExchangeSetSignatureProvider signatureProvider;
@@ -111,7 +105,6 @@ public class S100DatasetDiscoveryMetadataBuilder {
         // Initialise the object factories
         this.objectFactory = new ObjectFactory();
         this.citObjectFactory = new org.iso.standards.iso._19115.__3.cit._2.ObjectFactory();
-        this.gcoObjectFactory = new org.iso.standards.iso._19115.__3.gco._1.ObjectFactory();
     }
 
     /**
@@ -122,17 +115,6 @@ public class S100DatasetDiscoveryMetadataBuilder {
      */
     public S100DatasetDiscoveryMetadataBuilder setFileName(String fileName) {
         this.fileName = fileName;
-        return this;
-    }
-
-    /**
-     * Sets file content.
-     *
-     * @param fileContent the file content
-     * @return the S-100 dataset discovery metadata builder
-     */
-    public S100DatasetDiscoveryMetadataBuilder setFileContent(byte[] fileContent) {
-        this.fileContent = fileContent;
         return this;
     }
 
@@ -506,7 +488,7 @@ public class S100DatasetDiscoveryMetadataBuilder {
      *
      * @return the built S-100 exchange set dataset discovery metadata object
      */
-    public S100DatasetDiscoveryMetadata build() {
+    public S100DatasetDiscoveryMetadata build(byte[] payload) {
         // Create the metadata object
         final S100DatasetDiscoveryMetadata metadata = new S100DatasetDiscoveryMetadata();
 
@@ -610,12 +592,12 @@ public class S100DatasetDiscoveryMetadataBuilder {
         metadata.setDigitalSignatureReference(digitalSignatureReferencePropertyType);
 
         // Sign the dataset file if a provider detected
-        if(Objects.nonNull(this.signatureProvider)) {
+        if(Objects.nonNull(this.signatureProvider) && Objects.nonNull(payload)) {
             // Generate the signature
             final S100SEDigitalSignature signature = this.signatureProvider.generateSignature(
                     this.fileName,
                     signatureReference,
-                    this.fileContent);
+                    payload);
 
             // And add it to the metadata
             final S100DatasetDiscoveryMetadata.DigitalSignatureValue digitalSignatureValue = new S100DatasetDiscoveryMetadata.DigitalSignatureValue();

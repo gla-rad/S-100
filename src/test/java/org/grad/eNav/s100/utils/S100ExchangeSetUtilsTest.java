@@ -127,7 +127,6 @@ class S100ExchangeSetUtilsTest {
                 .setCertificates(Collections.singletonMap("CRT1", certificate))
                 .addDatasetMetadata(this.s100DatasetDiscoveryMetadataBuilder
                         .setFileName("file:/dataset.XML")
-                        .setFileContent("dataset".getBytes())
                         .setDatasetID("urn:mrn:gla:grad:s125:datasets:XXXX")
                         .setDescription("description")
                         .setCompressionFlag(false)
@@ -156,7 +155,7 @@ class S100ExchangeSetUtilsTest {
                         .setMaintenanceFrequency(MaintenanceFrequency.CONTINUAL)
                         .setMaintenanceDate(LocalDate.parse("2023-01-03", this.dateFormat))
                         .setMaintenancePeriod(Duration.ofDays(100))
-                        .build())
+                        .build("dataset".getBytes()))
                 .build();
     }
 

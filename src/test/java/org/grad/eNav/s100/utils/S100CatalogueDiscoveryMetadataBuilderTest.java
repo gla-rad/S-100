@@ -62,7 +62,6 @@ class S100CatalogueDiscoveryMetadataBuilderTest {
     void testConstructor() {
         assertNotNull(this.s100CatalogueDiscoveryMetadataBuilder);
         assertNull(this.s100CatalogueDiscoveryMetadataBuilder.fileName);
-        assertNull(this.s100CatalogueDiscoveryMetadataBuilder.fileContent);
         assertNull(this.s100CatalogueDiscoveryMetadataBuilder.purpose);
         assertNull(this.s100CatalogueDiscoveryMetadataBuilder.editionNumber);
         assertNull(this.s100CatalogueDiscoveryMetadataBuilder.scope);
@@ -85,7 +84,6 @@ class S100CatalogueDiscoveryMetadataBuilderTest {
         // Perform the setting operations
         this.s100CatalogueDiscoveryMetadataBuilder
                 .setFileName("file:/catalogue.XML")
-                .setFileContent("supportFile".getBytes())
                 .setPurpose(S100Purpose.NEW_EDITION)
                 .setEditionNumber(BigInteger.ONE)
                 .setScope(S100CatalogueScope.FEATURE_CATALOGUE)
@@ -98,7 +96,6 @@ class S100CatalogueDiscoveryMetadataBuilderTest {
 
         assertNotNull(this.s100CatalogueDiscoveryMetadataBuilder);
         assertEquals("file:/catalogue.XML", this.s100CatalogueDiscoveryMetadataBuilder.fileName);
-        assertNotNull(this.s100CatalogueDiscoveryMetadataBuilder.fileContent);
         assertEquals(S100Purpose.NEW_EDITION, this.s100CatalogueDiscoveryMetadataBuilder.purpose);
         assertEquals(BigInteger.ONE, this.s100CatalogueDiscoveryMetadataBuilder.editionNumber);
         assertEquals(S100CatalogueScope.FEATURE_CATALOGUE, this.s100CatalogueDiscoveryMetadataBuilder.scope);
@@ -123,7 +120,6 @@ class S100CatalogueDiscoveryMetadataBuilderTest {
         // Perform the setting operations and build
         final S100CatalogueDiscoveryMetadata metadata = this.s100CatalogueDiscoveryMetadataBuilder
                 .setFileName("file:/catalogue.XML")
-                .setFileContent("supportFile".getBytes())
                 .setPurpose(S100Purpose.NEW_EDITION)
                 .setEditionNumber(BigInteger.ONE)
                 .setScope(S100CatalogueScope.FEATURE_CATALOGUE)
@@ -133,7 +129,7 @@ class S100CatalogueDiscoveryMetadataBuilderTest {
                 .setCompressionFlag(false)
                 .setDefaultLocale(Locale.UK)
                 .setOtherLocales(Collections.singletonList(Locale.ENGLISH))
-                .build();
+                .build("supportFile".getBytes());
 
         // Assess the main information
         assertNotNull(metadata);

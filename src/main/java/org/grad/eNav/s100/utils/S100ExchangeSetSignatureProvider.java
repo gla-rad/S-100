@@ -21,7 +21,7 @@ import _int.iho.s100.catalog._5_0.S100SEDigitalSignatureReference;
 
 /**
  * The S-100 Exchange Set Signature Provider Interface.
- *
+ * <p/>
  * This interface is utilised by the S-100 Exchange Set builders to generate
  * signatures while building the exchange set and its metadata.
  *

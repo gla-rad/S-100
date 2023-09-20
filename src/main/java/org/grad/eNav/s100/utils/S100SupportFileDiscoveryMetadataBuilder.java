@@ -28,7 +28,7 @@ import java.util.Optional;
 
 /**
  * The S100 Support File Discovery Metadata Builder Class.
- *
+ * <p/>
  * This is a basic builder class that enables the generation of the S100
  * Dataset Discovery Metadata contents.
  *
@@ -38,7 +38,6 @@ public class S100SupportFileDiscoveryMetadataBuilder {
 
     // Class Variables
     protected String fileName;
-    protected byte[] fileContent;
     protected S100SupportFileRevisionStatus revisionStatus;
     protected BigInteger editionNumber;
     protected LocalDate issueDate;
@@ -83,17 +82,6 @@ public class S100SupportFileDiscoveryMetadataBuilder {
      */
     public S100SupportFileDiscoveryMetadataBuilder setFileName(String fileName) {
         this.fileName = fileName;
-        return this;
-    }
-
-    /**
-     * Sets file content.
-     *
-     * @param fileContent the file content
-     * @return the S-100 support file discovery metadata builder
-     */
-    public S100SupportFileDiscoveryMetadataBuilder setFileContent(byte[] fileContent) {
-        this.fileContent = fileContent;
         return this;
     }
 
@@ -268,7 +256,7 @@ public class S100SupportFileDiscoveryMetadataBuilder {
      *
      * @return the built S-100 exchange set support file discovery metadata object
      */
-    public S100SupportFileDiscoveryMetadata build() {
+    public S100SupportFileDiscoveryMetadata build(byte[] payload) {
         // Create the metadata object
         final S100SupportFileDiscoveryMetadata metadata = new S100SupportFileDiscoveryMetadata();
 
@@ -316,7 +304,7 @@ public class S100SupportFileDiscoveryMetadataBuilder {
             final S100SEDigitalSignature signature = this.signatureProvider.generateSignature(
                     this.fileName,
                     signatureReference,
-                    this.fileContent);
+                    payload);
 
             // And add it to the metadata
             final S100SupportFileDiscoveryMetadata.DigitalSignatureValue digitalSignatureValue = new S100SupportFileDiscoveryMetadata.DigitalSignatureValue();

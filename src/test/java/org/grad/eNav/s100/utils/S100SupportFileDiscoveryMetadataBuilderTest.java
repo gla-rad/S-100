@@ -62,7 +62,6 @@ class S100SupportFileDiscoveryMetadataBuilderTest {
     void testConstructor() {
         assertNotNull(this.s100SupportFileDiscoveryMetadataBuilder);
         assertNull(this.s100SupportFileDiscoveryMetadataBuilder.fileName);
-        assertNull(this.s100SupportFileDiscoveryMetadataBuilder.fileContent);
         assertNull(this.s100SupportFileDiscoveryMetadataBuilder.revisionStatus);
         assertNull(this.s100SupportFileDiscoveryMetadataBuilder.editionNumber);
         assertNull(this.s100SupportFileDiscoveryMetadataBuilder.issueDate);
@@ -89,7 +88,6 @@ class S100SupportFileDiscoveryMetadataBuilderTest {
         // Perform the setting operations
         this.s100SupportFileDiscoveryMetadataBuilder
                 .setFileName("file:/supportFile.XML")
-                .setFileContent("supportFile".getBytes())
                 .setRevisionStatus(S100SupportFileRevisionStatus.NEW)
                 .setEditionNumber(BigInteger.ONE)
                 .setIssueDate(LocalDate.parse("2023-01-02", this.dateFormat))
@@ -106,7 +104,6 @@ class S100SupportFileDiscoveryMetadataBuilderTest {
 
         assertNotNull(this.s100SupportFileDiscoveryMetadataBuilder);
         assertEquals("file:/supportFile.XML", this.s100SupportFileDiscoveryMetadataBuilder.fileName);
-        assertNotNull(this.s100SupportFileDiscoveryMetadataBuilder.fileContent);
         assertEquals(S100SupportFileRevisionStatus.NEW, this.s100SupportFileDiscoveryMetadataBuilder.revisionStatus);
         assertEquals(BigInteger.ONE, this.s100SupportFileDiscoveryMetadataBuilder.editionNumber);
         assertEquals(LocalDate.parse("2023-01-02", this.dateFormat), this.s100SupportFileDiscoveryMetadataBuilder.issueDate);
@@ -134,7 +131,6 @@ class S100SupportFileDiscoveryMetadataBuilderTest {
         // Perform the setting operations and build
         final S100SupportFileDiscoveryMetadata metadata = this.s100SupportFileDiscoveryMetadataBuilder
                 .setFileName("file:/supportFile.XML")
-                .setFileContent("supportFile".getBytes())
                 .setRevisionStatus(S100SupportFileRevisionStatus.NEW)
                 .setEditionNumber(BigInteger.ONE)
                 .setIssueDate(LocalDate.parse("2023-01-02", this.dateFormat))
@@ -148,7 +144,7 @@ class S100SupportFileDiscoveryMetadataBuilderTest {
                 .setDefaultLocale(Locale.UK)
                 .setSupportedResources(Collections.singletonList("supportedResource"))
                 .setResourcePurpose(S100ResourcePurpose.SUPPORT_FILE)
-                .build();
+                .build("supportFile".getBytes());
 
         // Assess the main information
         assertNotNull(metadata);

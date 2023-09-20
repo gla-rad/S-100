@@ -28,7 +28,7 @@ import java.util.Optional;
 
 /**
  * The S100 Support File Discovery Metadata Builder Class.
- *
+ * <p/>
  * This is a basic builder class that enables the generation of the S100
  * Dataset Discovery Metadata contents.
  *
@@ -38,7 +38,6 @@ public class S100CatalogueDiscoveryMetadataBuilder {
 
     // Class Variables
     protected String fileName;
-    protected byte[] fileContent;
     protected S100Purpose purpose;
     protected BigInteger editionNumber;
     protected LocalDate issueDate;
@@ -80,17 +79,6 @@ public class S100CatalogueDiscoveryMetadataBuilder {
      */
     public S100CatalogueDiscoveryMetadataBuilder setFileName(String fileName) {
         this.fileName = fileName;
-        return this;
-    }
-
-    /**
-     * Sets file content.
-     *
-     * @param fileContent the file content
-     * @return the S-100 catalogue discovery metadata builder
-     */
-    public S100CatalogueDiscoveryMetadataBuilder setFileContent(byte[] fileContent) {
-        this.fileContent = fileContent;
         return this;
     }
 
@@ -221,7 +209,7 @@ public class S100CatalogueDiscoveryMetadataBuilder {
      *
      * @return the built S-100 exchange set catalogue discovery metadata object
      */
-    public S100CatalogueDiscoveryMetadata build() {
+    public S100CatalogueDiscoveryMetadata build(byte[] payload) {
         // Create the metadata object
         final S100CatalogueDiscoveryMetadata metadata = new S100CatalogueDiscoveryMetadata();
 
@@ -267,12 +255,12 @@ public class S100CatalogueDiscoveryMetadataBuilder {
         metadata.setDigitalSignatureReference(digitalSignatureReferencePropertyType);
 
         // Sign the dataset file if a provider detected
-        if(Objects.nonNull(this.signatureProvider)) {
+        if(Objects.nonNull(this.signatureProvider) && Objects.nonNull(payload)) {
             // Generate the signature
             final S100SEDigitalSignature signature = this.signatureProvider.generateSignature(
                     this.fileName,
                     signatureReference,
-                    this.fileContent);
+                    payload);
 
             // And add it to the metadata
             final S100CatalogueDiscoveryMetadata.DigitalSignatureValue digitalSignatureValue = new S100CatalogueDiscoveryMetadata.DigitalSignatureValue();

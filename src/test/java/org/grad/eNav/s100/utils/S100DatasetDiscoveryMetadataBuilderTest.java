@@ -66,7 +66,6 @@ class S100DatasetDiscoveryMetadataBuilderTest {
     void testConstructor() {
         assertNotNull(this.s100DatasetDiscoveryMetadataBuilder);
         assertNull(this.s100DatasetDiscoveryMetadataBuilder.fileName);
-        assertNull(this.s100DatasetDiscoveryMetadataBuilder.fileContent);
         assertNull(this.s100DatasetDiscoveryMetadataBuilder.datasetID);
         assertNull(this.s100DatasetDiscoveryMetadataBuilder.description);
         assertFalse(this.s100DatasetDiscoveryMetadataBuilder.compressionFlag);
@@ -111,7 +110,6 @@ class S100DatasetDiscoveryMetadataBuilderTest {
         // Perform the setting operations
         this.s100DatasetDiscoveryMetadataBuilder
                 .setFileName("file:/dataset.XML")
-                .setFileContent("dataset".getBytes())
                 .setDatasetID("urn:mrn:gla:grad:s125:datasets:XXXX")
                 .setDescription("description")
                 .setCompressionFlag(false)
@@ -141,7 +139,6 @@ class S100DatasetDiscoveryMetadataBuilderTest {
 
         assertNotNull(this.s100DatasetDiscoveryMetadataBuilder);
         assertEquals("file:/dataset.XML", this.s100DatasetDiscoveryMetadataBuilder.fileName);
-        assertNotNull(this.s100DatasetDiscoveryMetadataBuilder.fileContent);
         assertEquals("urn:mrn:gla:grad:s125:datasets:XXXX", this.s100DatasetDiscoveryMetadataBuilder.datasetID);
         assertEquals("description", this.s100DatasetDiscoveryMetadataBuilder.description);
         assertFalse(this.s100DatasetDiscoveryMetadataBuilder.compressionFlag);
@@ -187,7 +184,6 @@ class S100DatasetDiscoveryMetadataBuilderTest {
         // Perform the setting operations and build
         final S100DatasetDiscoveryMetadata metadata = this.s100DatasetDiscoveryMetadataBuilder
                 .setFileName("file:/dataset.XML")
-                .setFileContent("dataset".getBytes())
                 .setDatasetID("urn:mrn:gla:grad:s125:datasets:XXXX")
                 .setDescription("description")
                 .setCompressionFlag(false)
@@ -214,7 +210,7 @@ class S100DatasetDiscoveryMetadataBuilderTest {
                 .setReplacedData(false)
                 .setNavigationPurposes(Collections.singletonList(S100NavigationPurpose.OVERVIEW))
                 .setMaintenanceFrequency(MaintenanceFrequency.CONTINUAL)
-                .build();
+                .build("dataset".getBytes());
 
         // Assess the main information
         assertNotNull(metadata);

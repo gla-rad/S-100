@@ -33,7 +33,7 @@ import java.util.*;
 
 /**
  * The S100 Exchange Catalogue Builder Class.
- *
+ * <p/>
  * This is a basic builder class that enables the generation of the S100
  * Exchange Set Catalogue file (named "CATALOG.XML") contents.
  *
