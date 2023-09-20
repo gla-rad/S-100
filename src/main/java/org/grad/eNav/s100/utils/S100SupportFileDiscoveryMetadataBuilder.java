@@ -263,9 +263,10 @@ public class S100SupportFileDiscoveryMetadataBuilder {
     }
 
     /**
-     * The main building function of the S-100 exchange set dataset discovery
-     * metadata object.
-     * @return the built  S-100 exchange set dataset discovery metadata object
+     * The main building function of the S-100 exchange set support file
+     * discovery metadata object.
+     *
+     * @return the built S-100 exchange set support file discovery metadata object
      */
     public S100SupportFileDiscoveryMetadata build() {
         // Create the metadata object
@@ -276,8 +277,8 @@ public class S100SupportFileDiscoveryMetadataBuilder {
         metadata.setRevisionStatus(this.revisionStatus);
         metadata.setEditionNumber(this.editionNumber);
         metadata.setIssueDate(this.issueDate);
-        final S100SupportFileSpecification supportFileSpecification = new S100SupportFileSpecification();
-        if(Objects.nonNull(this.supportFileSpecificationName)){
+        if(Objects.nonNull(this.supportFileSpecificationName)) {
+            final S100SupportFileSpecification supportFileSpecification = new S100SupportFileSpecification();
             supportFileSpecification.setName(this.supportFileSpecificationName);
             supportFileSpecification.setVersion(this.supportFileSpecificationVersion);
             supportFileSpecification.setDate(this.supportFileSpecificationDate);

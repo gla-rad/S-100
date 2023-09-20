@@ -127,7 +127,7 @@ class S100DatasetDiscoveryMetadataBuilderTest {
                 .setUpdateApplicationDate(LocalDate.parse("2023-01-01", this.dateFormat))
                 .setIssueDate(LocalDate.parse("2023-01-02", this.dateFormat))
                 .setIssueTime(LocalTime.parse("00:00:00", this.timeFormat))
-                .setProductSpecification(null)
+                .setProductSpecification(new S100ProductSpecification())
                 .setProducingAgency("producingAgency")
                 .setProducingAgencyRole(RoleCode.ORIGINATOR)
                 .setProducerCode("producerCode")
@@ -162,7 +162,7 @@ class S100DatasetDiscoveryMetadataBuilderTest {
         assertNull(this.s100DatasetDiscoveryMetadataBuilder.boundingBox);
         assertNull(this.s100DatasetDiscoveryMetadataBuilder.timeInstantBegin);
         assertNull(this.s100DatasetDiscoveryMetadataBuilder.timeInstantEnd);
-        assertNull(this.s100DatasetDiscoveryMetadataBuilder.productSpecification);
+        assertNotNull(this.s100DatasetDiscoveryMetadataBuilder.productSpecification);
         assertEquals("producingAgency", this.s100DatasetDiscoveryMetadataBuilder.producingAgency);
         assertEquals(RoleCode.ORIGINATOR,this.s100DatasetDiscoveryMetadataBuilder.producingAgencyRole);
         assertEquals("producerCode", this.s100DatasetDiscoveryMetadataBuilder.producerCode);
@@ -178,8 +178,9 @@ class S100DatasetDiscoveryMetadataBuilderTest {
     }
 
     /**
-     * Test that the S-100 Exchange Set Catalogue builder can correctly build
-     * an exchange set XML if the appropriate parameters have been provided.
+     * Test that the S-100 Exchange Set Catalogue Discovery Metadata builder can
+     * correctly build a discovery metadata XML if the appropriate parameters
+     * have been provided.
      */
     @Test
     void testBuild() {
@@ -202,7 +203,7 @@ class S100DatasetDiscoveryMetadataBuilderTest {
                 .setUpdateApplicationDate(LocalDate.parse("2023-01-01", this.dateFormat))
                 .setIssueDate(LocalDate.parse("2023-01-02", this.dateFormat))
                 .setIssueTime(LocalTime.parse("00:00:00", this.timeFormat))
-                .setProductSpecification(null)
+                .setProductSpecification(new S100ProductSpecification())
                 .setProducingAgency("producingAgency")
                 .setProducingAgencyRole(RoleCode.ORIGINATOR)
                 .setProducerCode("producerCode")
@@ -242,7 +243,7 @@ class S100DatasetDiscoveryMetadataBuilderTest {
         assertEquals(LocalDate.parse("2023-01-01", this.dateFormat), metadata.getUpdateApplicationDate());
         assertEquals(LocalDate.parse("2023-01-02", this.dateFormat), metadata.getIssueDate());
         assertEquals(LocalTime.parse("00:00:00", this.timeFormat), metadata.getIssueTime());
-        assertNull(metadata.getProductSpecification());
+        assertNotNull(metadata.getProductSpecification());
 
         // Assess the producing agency information
         assertNotNull(metadata.getProducingAgency());

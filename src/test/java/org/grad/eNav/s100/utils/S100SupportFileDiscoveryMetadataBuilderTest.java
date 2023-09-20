@@ -17,9 +17,6 @@
 package org.grad.eNav.s100.utils;
 
 import _int.iho.s100.catalog._5_0.*;
-import org.grad.eNav.s100.enums.MaintenanceFrequency;
-import org.grad.eNav.s100.enums.RoleCode;
-import org.grad.eNav.s100.enums.SecurityClassification;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -27,7 +24,6 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.Locale;
@@ -129,8 +125,9 @@ class S100SupportFileDiscoveryMetadataBuilderTest {
     }
 
     /**
-     * Test that the S-100 Exchange Set Catalogue builder can correctly build
-     * an exchange set XML if the appropriate parameters have been provided.
+     * Test that the S-100 Exchange Set Support File Discovery Metadata builder
+     * can correctly build a discovery metadata XML if the appropriate
+     * parameters have been provided.
      */
     @Test
     void testBuild() {
@@ -188,6 +185,18 @@ class S100SupportFileDiscoveryMetadataBuilderTest {
         assertEquals(1, metadata.getSupportedResources().size());
         assertEquals("supportedResource", metadata.getSupportedResources().get(0));
         assertEquals(S100ResourcePurpose.SUPPORT_FILE, metadata.getResourcePurpose());
+
+        // Assess the signature
+        assertNotNull(metadata.getDigitalSignatureReference());
+        assertNotNull(metadata.getDigitalSignatureReference().getValue());
+        assertEquals(S100SEDigitalSignatureReference.DSA, metadata.getDigitalSignatureReference().getValue());
+        assertNotNull(metadata.getDigitalSignatureValues());
+        assertEquals(1, metadata.getDigitalSignatureValues().size());
+        assertNotNull(metadata.getDigitalSignatureValues().get(0));
+        assertNotNull(metadata.getDigitalSignatureValues().get(0).getS100SEDigitalSignature());
+        assertNotNull(metadata.getDigitalSignatureValues().get(0).getS100SEDigitalSignature().getValue());
+        assertNotNull(metadata.getDigitalSignatureValues().get(0).getS100SEDigitalSignature().getValue().getValue());
+        assertEquals("signature".getBytes().length, metadata.getDigitalSignatureValues().get(0).getS100SEDigitalSignature().getValue().getValue().length);
     }
 
 }

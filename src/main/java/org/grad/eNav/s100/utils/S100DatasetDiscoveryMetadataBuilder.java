@@ -503,7 +503,8 @@ public class S100DatasetDiscoveryMetadataBuilder {
     /**
      * The main building function of the S-100 exchange set dataset discovery
      * metadata object.
-     * @return the built  S-100 exchange set dataset discovery metadata object
+     *
+     * @return the built S-100 exchange set dataset discovery metadata object
      */
     public S100DatasetDiscoveryMetadata build() {
         // Create the metadata object
