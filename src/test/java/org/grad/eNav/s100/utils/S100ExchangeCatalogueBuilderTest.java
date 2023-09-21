@@ -28,6 +28,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.Locale;
@@ -75,6 +76,7 @@ class S100ExchangeCatalogueBuilderTest {
     void testConstructor() {
         assertNotNull(this.s100ExchangeCatalogueBuilder);
         assertNull(this.s100ExchangeCatalogueBuilder.identifier);
+        assertNull(this.s100ExchangeCatalogueBuilder.dateTime);
         assertNull(this.s100ExchangeCatalogueBuilder.dataServerIdentifier);
         assertNull(this.s100ExchangeCatalogueBuilder.organization);
         assertNull(this.s100ExchangeCatalogueBuilder.electronicMailAddresses);
@@ -99,6 +101,7 @@ class S100ExchangeCatalogueBuilderTest {
     void testSetters() throws JAXBException, CertificateEncodingException {
         // Perform the setting operations
         this.s100ExchangeCatalogueBuilder.setIdentifier("identifier")
+                .setDateTime(LocalDateTime.parse("2023-01-01T00:00:00.000", this.dateTimeFormat))
                 .setDataServerIdentifier("dataServerIdentifier")
                 .setOrganization("organisation")
                 .setElectronicMailAddresses(Collections.singletonList("test@test.com"))
@@ -138,27 +141,6 @@ class S100ExchangeCatalogueBuilderTest {
     }
 
     /**
-     * Test the translaction operations between the certificate and the
-     * respective PEM representation performed by the builder
-     *
-     * @throws IOException for IO Exceptions
-     * @throws CertificateException for issues with the certificate loading
-     */
-    @Test
-    void testCertPemOperations() throws IOException, CertificateException {
-        final InputStream in = ClassLoader.getSystemResourceAsStream("test.pem");
-        final String inString = new String(in.readAllBytes(), StandardCharsets.UTF_8);
-
-        // Perform the translations
-        X509Certificate certificate = this.s100ExchangeCatalogueBuilder.getCertFromPem(inString.getBytes());
-        byte[] pem = this.s100ExchangeCatalogueBuilder.getPemFromCert(certificate);
-
-        // Make sure the translation operations worked correctly
-        assertNotNull(certificate);
-        assertNotNull(pem);
-    }
-
-    /**
      * Test that the S-100 Exchange Set Catalogue builder can correctly build
      * an exchange set XML if the appropriate parameters have been provided.
      */
@@ -167,11 +149,12 @@ class S100ExchangeCatalogueBuilderTest {
         // Load an X.509 certificate
         final InputStream in = ClassLoader.getSystemResourceAsStream("test.pem");
         final String inString = new String(in.readAllBytes(), StandardCharsets.UTF_8);
-        X509Certificate certificate = this.s100ExchangeCatalogueBuilder.getCertFromPem(inString.getBytes());
+        X509Certificate certificate = S100ExchangeSetUtils.getCertFromPem(inString.getBytes());
 
         // Perform the setting operations
         S100ExchangeCatalogue exchangeCatalogue = this.s100ExchangeCatalogueBuilder
                 .setIdentifier("identifier")
+                .setDateTime(LocalDateTime.parse("2023-01-01T00:00:00.000", this.dateTimeFormat))
                 .setDataServerIdentifier("dataServerIdentifier")
                 .setOrganization("organisation")
                 .setElectronicMailAddresses(Collections.singletonList("test@test.com"))
@@ -194,6 +177,7 @@ class S100ExchangeCatalogueBuilderTest {
         // Assert that the building took place correctly
         assertNotNull(exchangeCatalogue);
         assertEquals("identifier", exchangeCatalogue.getIdentifier().getIdentifier());
+        assertEquals(LocalDateTime.parse("2023-01-01T00:00:00.000", this.dateTimeFormat), exchangeCatalogue.getIdentifier().getDateTime());
         assertEquals("dataServerIdentifier", exchangeCatalogue.getDataServerIdentifier());
         assertNotNull(exchangeCatalogue.getContact().getOrganization());
         assertNotNull(exchangeCatalogue.getContact().getOrganization().getCharacterString());

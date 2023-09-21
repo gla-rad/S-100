@@ -2,7 +2,7 @@
 <ns15:S100_ExchangeCatalogue xmlns:ns1="http://standards.iso.org/iso/19115/-3/gco/1.0" xmlns:ns2="http://standards.iso.org/iso/19115/-3/cit/2.0" xmlns:ns3="http://standards.iso.org/iso/19115/-3/cit/1.0" xmlns:ns4="http://standards.iso.org/iso/19115/-3/lan/1.0" xmlns:ns5="http://standards.iso.org/iso/19115/-3/mcc/1.0" xmlns:ns6="http://standards.iso.org/iso/19115/-3/mri/1.0" xmlns:ns7="http://www.opengis.net/gml/3.2" xmlns:ns8="http://www.w3.org/1999/xlink" xmlns:ns9="http://standards.iso.org/iso/19115/-3/gex/1.0" xmlns:ns10="http://www.isotc211.org/2005/gco" xmlns:ns11="http://www.isotc211.org/2005/gmd" xmlns:ns12="http://standards.iso.org/iso/19115/-3/mmi/1.0" xmlns:ns13="http://standards.iso.org/iso/19115/-3/mco/1.0" xmlns:ns14="http://www.isotc211.org/2005/gts" xmlns:ns15="http://www.iho.int/s100/xc/5.0" xmlns:ns16="http://www.iho.int/s100/se/5.0">
     <ns15:identifier>
         <ns15:identifier>Test Exchange Set</ns15:identifier>
-        <ns15:dateTime>2023-09-20</ns15:dateTime>
+        <ns15:dateTime>2023-01-01</ns15:dateTime>
     </ns15:identifier>
     <ns15:contact>
         <ns15:organization>
@@ -127,7 +127,7 @@
                     <ns12:maintenanceDate>
                         <ns5:Abstract_TypedDate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns2:CI_Date_Type">
                             <ns2:date>
-<ns1:Date>2023-01-03</ns1:Date>
+<ns1:Date>2023-01-04</ns1:Date>
                             </ns2:date>
                         </ns5:Abstract_TypedDate>
                     </ns12:maintenanceDate>

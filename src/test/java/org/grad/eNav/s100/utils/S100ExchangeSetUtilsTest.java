@@ -37,6 +37,7 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
@@ -93,8 +94,7 @@ class S100ExchangeSetUtilsTest {
         //                   Load a test X.509 Certificate                    //
         //====================================================================//
         final InputStream inCert = ClassLoader.getSystemResourceAsStream("test.pem");
-        final String inString = new String(inCert.readAllBytes(), StandardCharsets.UTF_8);
-        X509Certificate certificate = this.s100ExchangeCatalogueBuilder.getCertFromPem(inString.getBytes());
+        final byte[] inCertPem = inCert.readAllBytes();
         //====================================================================//
 
         //====================================================================//
@@ -111,6 +111,7 @@ class S100ExchangeSetUtilsTest {
         // Initialise the Dataset
         this.s100ExchangeCatalogue = this.s100ExchangeCatalogueBuilder
                 .setIdentifier("Test Exchange Set")
+                .setDateTime(LocalDateTime.parse("2023-01-01T00:00:00.000", this.dateTimeFormat))
                 .setDataServerIdentifier("2d7c8116-75a9-4fb8-b1b3-7a698d416b97")
                 .setOrganization("GRAD")
                 .setElectronicMailAddresses(Collections.singletonList("test@gla-rad.org"))
@@ -124,7 +125,7 @@ class S100ExchangeSetUtilsTest {
                 .setDescription("Test Exchange Set Description.")
                 .setComment("Test Exchange Set Comment.")
                 .setProductSpecification(Collections.singletonList(s100ProductSpecification))
-                .setCertificates(Collections.singletonMap("CRT1", certificate))
+                .setCertificatesByPem(Collections.singletonMap("CRT1", inCertPem))
                 .addDatasetMetadata(builder -> builder
                         .setFileName("file:/dataset.XML")
                         .setDatasetID("urn:mrn:gla:grad:s125:datasets:XXXX")
@@ -153,7 +154,7 @@ class S100ExchangeSetUtilsTest {
                         .setReplacedData(false)
                         .setNavigationPurposes(Collections.singletonList(S100NavigationPurpose.OVERVIEW))
                         .setMaintenanceFrequency(MaintenanceFrequency.CONTINUAL)
-                        .setMaintenanceDate(LocalDate.parse("2023-01-03", this.dateFormat))
+                        .setMaintenanceDate(LocalDate.parse("2023-01-04", this.dateFormat))
                         .setMaintenancePeriod(Duration.ofDays(100))
                         .build("dataset".getBytes()))
                 .build();
@@ -342,4 +343,24 @@ class S100ExchangeSetUtilsTest {
         assertEquals(this.s100ExchangeCatalogue.getDatasetDiscoveryMetadata().getS100DatasetDiscoveryMetadatas().get(0).isReplacedData(), metadata.isReplacedData());
     }
 
+    /**
+     * Test the translation operations between the certificate and the
+     * respective PEM representation performed by the utility.
+     *
+     * @throws IOException for IO Exceptions
+     * @throws CertificateException for issues with the certificate loading
+     */
+    @Test
+    void testCertPemOperations() throws IOException, CertificateException {
+        final InputStream in = ClassLoader.getSystemResourceAsStream("test.pem");
+        final String inString = new String(in.readAllBytes(), StandardCharsets.UTF_8);
+
+        // Perform the translations
+        X509Certificate certificate = S100ExchangeSetUtils.getCertFromPem(inString.getBytes());
+        byte[] pem = S100ExchangeSetUtils.getPemFromCert(certificate);
+
+        // Make sure the translation operations worked correctly
+        assertNotNull(certificate);
+        assertNotNull(pem);
+    }
 }

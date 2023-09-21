@@ -29,6 +29,10 @@ import javax.xml.bind.*;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
+import java.security.cert.CertificateEncodingException;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
 import java.util.*;
 
 /**
@@ -201,6 +205,32 @@ public class S100ExchangeSetUtils {
 
         // And translate
         return (S100ExchangeCatalogue) JAXBIntrospector.getValue(jaxbUnmarshaller.unmarshal(is));
+    }
+
+    /**
+     * This helper function will read the provided certificate and will generate
+     * a minified version of its PEM representation as a string.
+     *
+     * @param cert the X.509 certificate to be read
+     * @return the minified PEM representation of the certificate
+     * @throws CertificateEncodingException if the provided PEM file is invalid
+     */
+    public static byte[] getPemFromCert(X509Certificate cert) throws CertificateEncodingException {
+        return Base64.getEncoder().encode(cert.getEncoded());
+    }
+
+    /**
+     * This helper function will read the provided PEM file bytes and
+     * reconstruct the valid X509 certificate.
+     *
+     * @param certificate the cerificate PEM bytes
+     * @return the valid X509 certificate
+     * @throws CertificateException if the provided PEM file is invalid
+     */
+    public static X509Certificate getCertFromPem(byte[] certificate) throws CertificateException {
+        // Do the string conversion and reconstruct the X509Certificate object
+        final ByteArrayInputStream ins = new ByteArrayInputStream(certificate);
+        return (X509Certificate) CertificateFactory.getInstance("X.509").generateCertificate(ins);
     }
 
 }

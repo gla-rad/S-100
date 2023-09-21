@@ -23,11 +23,10 @@ import org.iso.standards.iso._19115.__3.cit._2.CITelephoneTypeCodePropertyType;
 import org.iso.standards.iso._19115.__3.lan._1.PTLocalePropertyType;
 
 import javax.xml.bind.JAXBException;
-import java.io.ByteArrayInputStream;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
-import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -44,6 +43,7 @@ public class S100ExchangeCatalogueBuilder {
 
     // Class Variables
     protected String identifier;
+    protected LocalDateTime dateTime;
     protected String dataServerIdentifier;
     protected String organization;
     protected List<String> electronicMailAddresses;
@@ -95,13 +95,24 @@ public class S100ExchangeCatalogueBuilder {
     }
 
     /**
-     * Sets the exchange set identifier.
+     * Sets the exchange set identifier string.
      *
-     * @param identifier the exchange set identifier
+     * @param identifier the exchange set identifier string
      * @return the S100 exchange set catalogue builder
      */
     public S100ExchangeCatalogueBuilder setIdentifier(String identifier) {
         this.identifier = identifier;
+        return this;
+    }
+
+    /**
+     * Sets the exchange set date time.
+     *
+     * @param dateTime the exchange set date time
+     * @return the S100 exchange set catalogue builder
+     */
+    public S100ExchangeCatalogueBuilder setDateTime(LocalDateTime dateTime) {
+        this.dateTime = dateTime;
         return this;
     }
 
@@ -265,7 +276,7 @@ public class S100ExchangeCatalogueBuilder {
      * @param certificateMap the certificates to be used
      * @return the S100 exchange set catalogue builder
      */
-    public S100ExchangeCatalogueBuilder setCertificates(Map<String, X509Certificate> certificateMap) throws CertificateException {
+    public S100ExchangeCatalogueBuilder setCertificates(Map<String, X509Certificate> certificateMap) {
         this.certificateMap.putAll(certificateMap);
         return this;
     }
@@ -277,12 +288,20 @@ public class S100ExchangeCatalogueBuilder {
      * @return the S100 exchange set catalogue builder
      */
     public S100ExchangeCatalogueBuilder setCertificatesByPem(Map<String, byte[]> certificateMap) throws CertificateException {
-        final Map<String, X509Certificate> temp = new HashMap<>();
-        for(Map.Entry<String, byte[]> entry : certificateMap.entrySet()) {
-            X509Certificate certificate = this.getCertFromPem(entry.getValue());
-            temp.put(entry.getKey(), certificate);
-        }
-        return this.setCertificates(temp);
+        // Translate the byte array map to an X.509 certificate one
+        final Map<String, X509Certificate> x509CertificateMap = certificateMap.entrySet()
+                .stream()
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        e-> {
+                            try {
+                                return S100ExchangeSetUtils.getCertFromPem(e.getValue());
+                            } catch (CertificateException ex) {
+                                throw new RuntimeException(ex);
+                            }
+                        }));
+        // And use the default setter
+        return this.setCertificates(x509CertificateMap);
     }
 
     /**
@@ -332,8 +351,10 @@ public class S100ExchangeCatalogueBuilder {
         //             Set the exchange set identifier information            //
         // ================================================================== //
         final S100ExchangeCatalogueIdentifier exchangeCatalogueIdentifier = new S100ExchangeCatalogueIdentifier();
-        exchangeCatalogueIdentifier.setIdentifier(this.identifier);
-        exchangeCatalogueIdentifier.setDateTime(LocalDateTime.now());
+        exchangeCatalogueIdentifier.setIdentifier(
+                this.identifier);
+        exchangeCatalogueIdentifier.setDateTime(
+                Optional.ofNullable(this.dateTime).orElse(LocalDateTime.now()));
         exchangeCatalogue.setIdentifier(exchangeCatalogueIdentifier);
 
         // Create a UUID for this server from a constant string
@@ -387,7 +408,7 @@ public class S100ExchangeCatalogueBuilder {
                 final S100SECertificateType certificateType = new S100SECertificateType();
                 certificateType.setId(certificateEntry.getKey());
                 certificateType.setIssuer(certificateEntry.getValue().getIssuerX500Principal().getName());
-                certificateType.setValue(this.getPemFromCert(certificateEntry.getValue()));
+                certificateType.setValue(S100ExchangeSetUtils.getPemFromCert(certificateEntry.getValue()));
                 s100SECertificateContainerType.getCertificates().add(certificateType);
             }
         }
@@ -462,32 +483,6 @@ public class S100ExchangeCatalogueBuilder {
 
         // And finally marshall to the XML output
         return exchangeCatalogue;
-    }
-
-    /**
-     * This helper function will read the provided certificate and will generate
-     * a minified version of its PEM representation as a string.
-     *
-     * @param cert the X.509 certificate to be read
-     * @return the minified PEM representation of the certificate
-     * @throws CertificateEncodingException if the provided PEM file is invalid
-     */
-    public byte[] getPemFromCert(X509Certificate cert) throws CertificateEncodingException {
-        return Base64.getEncoder().encode(cert.getEncoded());
-    }
-
-    /**
-     * This helper function will read the provided PEM file bytes and
-     * reconstruct the valid X509 certificate.
-     *
-     * @param certificate the cerificate PEM bytes
-     * @return the valid X509 certificate
-     * @throws CertificateException if the provided PEM file is invalid
-     */
-    protected X509Certificate getCertFromPem(byte[] certificate) throws CertificateException {
-        // Do the string conversion and reconstruct the X509Certificate object
-        final ByteArrayInputStream ins = new ByteArrayInputStream(certificate);
-        return (X509Certificate) CertificateFactory.getInstance("X.509").generateCertificate(ins);
     }
 
     //========================================================================//
