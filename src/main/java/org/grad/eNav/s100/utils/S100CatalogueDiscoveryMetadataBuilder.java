@@ -44,7 +44,7 @@ public class S100CatalogueDiscoveryMetadataBuilder {
     protected S100CatalogueScope scope;
     protected String versionNumber;
     protected S100ProductSpecification productSpecification;
-    protected S100SEDigitalSignatureReferencePropertyType digitalSignatureReference;
+    protected S100SEDigitalSignatureReference digitalSignatureReference;
     protected List<S100CatalogueDiscoveryMetadata.DigitalSignatureValue> digitalSignatureValues;
     protected boolean compressionFlag;
     protected Locale defaultLocale;
@@ -154,7 +154,7 @@ public class S100CatalogueDiscoveryMetadataBuilder {
      * @param digitalSignatureReference the digital signature reference
      * @return the S-100 catalogue discovery metadata builder
      */
-    public S100CatalogueDiscoveryMetadataBuilder setDigitalSignatureReference(S100SEDigitalSignatureReferencePropertyType digitalSignatureReference) {
+    public S100CatalogueDiscoveryMetadataBuilder setDigitalSignatureReference(S100SEDigitalSignatureReference digitalSignatureReference) {
         this.digitalSignatureReference = digitalSignatureReference;
         return this;
     }
@@ -247,7 +247,6 @@ public class S100CatalogueDiscoveryMetadataBuilder {
         //====================================================================//
         // First choose the signature reference to be used
         final S100SEDigitalSignatureReference signatureReference = Optional.ofNullable(this.digitalSignatureReference)
-                .map(S100SEDigitalSignatureReferencePropertyType::getValue)
                 .orElse(S100SEDigitalSignatureReference.DSA);
         // And populate the metadata
         final S100SEDigitalSignatureReferencePropertyType digitalSignatureReferencePropertyType = new S100SEDigitalSignatureReferencePropertyType();

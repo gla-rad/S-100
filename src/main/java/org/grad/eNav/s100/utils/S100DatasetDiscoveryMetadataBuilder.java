@@ -58,7 +58,7 @@ public class S100DatasetDiscoveryMetadataBuilder {
     protected boolean compressionFlag;
     protected boolean dataProtection;
     protected S100ProtectionScheme protectionScheme;
-    protected S100SEDigitalSignatureReferencePropertyType digitalSignatureReference;
+    protected S100SEDigitalSignatureReference digitalSignatureReference;
     protected List<S100DatasetDiscoveryMetadata.DigitalSignatureValue> digitalSignatureValues;
     protected boolean copyright;
     protected SecurityClassification classification;
@@ -179,7 +179,7 @@ public class S100DatasetDiscoveryMetadataBuilder {
      * @param digitalSignatureReference the digital signature reference
      * @return the S-100 dataset discovery metadata builder
      */
-    public S100DatasetDiscoveryMetadataBuilder setDigitalSignatureReference(S100SEDigitalSignatureReferencePropertyType digitalSignatureReference) {
+    public S100DatasetDiscoveryMetadataBuilder setDigitalSignatureReference(S100SEDigitalSignatureReference digitalSignatureReference) {
         this.digitalSignatureReference = digitalSignatureReference;
         return this;
     }
@@ -584,7 +584,6 @@ public class S100DatasetDiscoveryMetadataBuilder {
         //====================================================================//
         // First choose the signature reference to be used
         final S100SEDigitalSignatureReference signatureReference = Optional.ofNullable(this.digitalSignatureReference)
-                .map(S100SEDigitalSignatureReferencePropertyType::getValue)
                 .orElse(S100SEDigitalSignatureReference.DSA);
         // And populate the metadata
         final S100SEDigitalSignatureReferencePropertyType digitalSignatureReferencePropertyType = new S100SEDigitalSignatureReferencePropertyType();

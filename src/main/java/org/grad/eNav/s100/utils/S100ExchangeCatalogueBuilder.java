@@ -287,7 +287,7 @@ public class S100ExchangeCatalogueBuilder {
      * @param certificateMap the certificates to be used
      * @return the S100 exchange set catalogue builder
      */
-    public S100ExchangeCatalogueBuilder setCertificatesByPem(Map<String, byte[]> certificateMap) throws CertificateException {
+    public S100ExchangeCatalogueBuilder setCertificatesByPem(Map<String, String> certificateMap) throws CertificateException {
         // Translate the byte array map to an X.509 certificate one
         final Map<String, X509Certificate> x509CertificateMap = certificateMap.entrySet()
                 .stream()

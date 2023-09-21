@@ -220,17 +220,20 @@ public class S100ExchangeSetUtils {
     }
 
     /**
-     * This helper function will read the provided PEM file bytes and
-     * reconstruct the valid X509 certificate.
+     * This helper function will read the provided PEM input and reconstruct the
+     * valid X509 certificate.
      *
-     * @param certificate the cerificate PEM bytes
+     * @param certificatePem the certificate PEM input
      * @return the valid X509 certificate
      * @throws CertificateException if the provided PEM file is invalid
      */
-    public static X509Certificate getCertFromPem(byte[] certificate) throws CertificateException {
-        // Do the string conversion and reconstruct the X509Certificate object
-        final ByteArrayInputStream ins = new ByteArrayInputStream(certificate);
-        return (X509Certificate) CertificateFactory.getInstance("X.509").generateCertificate(ins);
+    public static X509Certificate getCertFromPem(String certificatePem) throws CertificateException {
+        // First decode the Base64 encoded PEM format
+        final byte[] decodedPem = Base64.getDecoder().decode(certificatePem);
+
+        // Then reconstruct the X509Certificate object
+        return (X509Certificate) CertificateFactory.getInstance("X.509")
+                .generateCertificate(new ByteArrayInputStream(decodedPem));
     }
 
 }

@@ -17,7 +17,6 @@
 package org.grad.eNav.s100.utils;
 
 import _int.iho.s100.catalog._5_0.*;
-import org.apache.commons.io.IOUtils;
 import org.grad.eNav.s100.enums.MaintenanceFrequency;
 import org.grad.eNav.s100.enums.RoleCode;
 import org.grad.eNav.s100.enums.SecurityClassification;
@@ -87,14 +86,19 @@ class S100ExchangeSetUtilsTest {
         //              Load a test Exchange Set Catalogue XML                //
         //====================================================================//
         final InputStream inES = ClassLoader.getSystemResourceAsStream("s100-exchange-set.xml");
-        this.s100ExchangeSetXml = IOUtils.toString(inES, StandardCharsets.UTF_8);
+        assertNotNull(inES);
+        this.s100ExchangeSetXml = new String(inES.readAllBytes(), StandardCharsets.UTF_8);
         //====================================================================//
 
         //====================================================================//
         //                   Load a test X.509 Certificate                    //
         //====================================================================//
         final InputStream inCert = ClassLoader.getSystemResourceAsStream("test.pem");
-        final byte[] inCertPem = inCert.readAllBytes();
+        assertNotNull(inCert);
+        final String inCertPem = new String(inCert.readAllBytes(), StandardCharsets.UTF_8)
+                .replaceAll("-----BEGIN CERTIFICATE-----","")
+                .replaceAll("-----END CERTIFICATE-----","")
+                .replaceAll(System.lineSeparator(),"");
         //====================================================================//
 
         //====================================================================//
@@ -353,10 +357,14 @@ class S100ExchangeSetUtilsTest {
     @Test
     void testCertPemOperations() throws IOException, CertificateException {
         final InputStream in = ClassLoader.getSystemResourceAsStream("test.pem");
-        final String inString = new String(in.readAllBytes(), StandardCharsets.UTF_8);
+        assertNotNull(in);
+        final String inString = new String(in.readAllBytes(), StandardCharsets.UTF_8)
+                .replaceAll("-----BEGIN CERTIFICATE-----","")
+                .replaceAll("-----END CERTIFICATE-----","")
+                .replaceAll(System.lineSeparator(),"");
 
         // Perform the translations
-        X509Certificate certificate = S100ExchangeSetUtils.getCertFromPem(inString.getBytes());
+        X509Certificate certificate = S100ExchangeSetUtils.getCertFromPem(inString);
         byte[] pem = S100ExchangeSetUtils.getPemFromCert(certificate);
 
         // Make sure the translation operations worked correctly

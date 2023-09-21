@@ -148,8 +148,12 @@ class S100ExchangeCatalogueBuilderTest {
     void testBuild() throws IOException, CertificateException, JAXBException {
         // Load an X.509 certificate
         final InputStream in = ClassLoader.getSystemResourceAsStream("test.pem");
-        final String inString = new String(in.readAllBytes(), StandardCharsets.UTF_8);
-        X509Certificate certificate = S100ExchangeSetUtils.getCertFromPem(inString.getBytes());
+        assertNotNull(in);
+        final String inString = new String(in.readAllBytes(), StandardCharsets.UTF_8)
+                .replaceAll("-----BEGIN CERTIFICATE-----","")
+                .replaceAll("-----END CERTIFICATE-----","")
+                .replaceAll(System.lineSeparator(),"");
+        final X509Certificate certificate = S100ExchangeSetUtils.getCertFromPem(inString);
 
         // Perform the setting operations
         S100ExchangeCatalogue exchangeCatalogue = this.s100ExchangeCatalogueBuilder

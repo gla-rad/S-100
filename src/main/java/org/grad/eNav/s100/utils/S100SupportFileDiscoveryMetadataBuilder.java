@@ -48,7 +48,7 @@ public class S100SupportFileDiscoveryMetadataBuilder {
     protected String otherDataTypeDescription;
     protected String comment;
     protected boolean compressionFlag;
-    protected S100SEDigitalSignatureReferencePropertyType digitalSignatureReference;
+    protected S100SEDigitalSignatureReference digitalSignatureReference;
     protected List<S100SupportFileDiscoveryMetadata.DigitalSignatureValue> digitalSignatureValues;
     protected Locale defaultLocale;
     protected List<String> supportedResources;
@@ -201,7 +201,7 @@ public class S100SupportFileDiscoveryMetadataBuilder {
      * @param digitalSignatureReference the digital signature reference
      * @return the S-100 dataset discovery metadata builder
      */
-    public S100SupportFileDiscoveryMetadataBuilder setDigitalSignatureReference(S100SEDigitalSignatureReferencePropertyType digitalSignatureReference) {
+    public S100SupportFileDiscoveryMetadataBuilder setDigitalSignatureReference(S100SEDigitalSignatureReference digitalSignatureReference) {
         this.digitalSignatureReference = digitalSignatureReference;
         return this;
     }
@@ -291,7 +291,6 @@ public class S100SupportFileDiscoveryMetadataBuilder {
         //====================================================================//
         // First choose the signature reference to be used
         final S100SEDigitalSignatureReference signatureReference = Optional.ofNullable(this.digitalSignatureReference)
-                .map(S100SEDigitalSignatureReferencePropertyType::getValue)
                 .orElse(S100SEDigitalSignatureReference.DSA);
         // And populate the metadata
         final S100SEDigitalSignatureReferencePropertyType digitalSignatureReferencePropertyType = new S100SEDigitalSignatureReferencePropertyType();
