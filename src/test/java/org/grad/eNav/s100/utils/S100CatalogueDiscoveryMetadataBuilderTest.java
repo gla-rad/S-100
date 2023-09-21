@@ -47,7 +47,7 @@ class S100CatalogueDiscoveryMetadataBuilderTest {
     void setup() throws IOException {
         this.s100CatalogueDiscoveryMetadataBuilder = new S100CatalogueDiscoveryMetadataBuilder((id, algorithm, payload) -> {
             S100SEDigitalSignature s100SEDigitalSignature = new S100SEDigitalSignature();
-            s100SEDigitalSignature.setId(id.toString());
+            s100SEDigitalSignature.setId("sig");
             s100SEDigitalSignature.setCertificateRef("ref");
             s100SEDigitalSignature.setValue("signature".getBytes());
             return s100SEDigitalSignature;

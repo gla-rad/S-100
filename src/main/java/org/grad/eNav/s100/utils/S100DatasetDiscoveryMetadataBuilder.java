@@ -30,6 +30,7 @@ import org.iso.standards.iso._19115.__3.mmi._1.MDMaintenanceFrequencyCodePropert
 import org.iso.standards.iso._19115.__3.mmi._1.MDMaintenanceInformationPropertyType;
 import org.iso.standards.iso._19115.__3.mmi._1.MDMaintenanceInformationType;
 import org.iso.standards.iso._19115.__3.mri._1.MDUsageType;
+import org.locationtech.jts.geom.Geometry;
 
 import java.math.BigInteger;
 import java.time.Duration;
@@ -70,7 +71,7 @@ public class S100DatasetDiscoveryMetadataBuilder {
     protected LocalDate updateApplicationDate;
     protected LocalDate issueDate;
     protected LocalTime issueTime;
-    protected S100GeographicBoundingBoxType boundingBox;
+    protected Geometry boundingBox;
     protected LocalDateTime timeInstantBegin;
     protected LocalDateTime timeInstantEnd;
     protected S100ProductSpecification productSpecification;
@@ -312,7 +313,7 @@ public class S100DatasetDiscoveryMetadataBuilder {
      * @param boundingBox the bounding box
      * @return the S-100 dataset discovery metadata builder
      */
-    public S100DatasetDiscoveryMetadataBuilder setBoundingBox(S100GeographicBoundingBoxType boundingBox) {
+    public S100DatasetDiscoveryMetadataBuilder setBoundingBox(Geometry boundingBox) {
         this.boundingBox = boundingBox;
         return this;
     }
@@ -519,7 +520,7 @@ public class S100DatasetDiscoveryMetadataBuilder {
         metadata.setUpdateApplicationDate(this.updateApplicationDate);
         metadata.setIssueDate(this.issueDate);
         metadata.setIssueTime(this.issueTime);
-        metadata.setBoundingBox(this.boundingBox);
+        metadata.setBoundingBox(S100ExchangeSetUtils.createS100GeographicBoundingBoxType(this.boundingBox));
         metadata.setTemporalExtent(null);
         metadata.setProductSpecification(this.productSpecification);
         metadata.setProducerCode(this.producerCode);
@@ -594,7 +595,7 @@ public class S100DatasetDiscoveryMetadataBuilder {
         if(Objects.nonNull(this.signatureProvider) && Objects.nonNull(payload)) {
             // Generate the signature
             final S100SEDigitalSignature signature = this.signatureProvider.generateSignature(
-                    this.fileName,
+                    this.datasetID,
                     signatureReference,
                     payload);
 

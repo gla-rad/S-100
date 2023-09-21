@@ -77,7 +77,7 @@
             <ns15:protectionScheme>S100p15</ns15:protectionScheme>
             <ns15:digitalSignatureReference>DSA</ns15:digitalSignatureReference>
             <ns15:digitalSignatureValue>
-                <ns16:S100_SE_DigitalSignature id="file:/dataset.XML" certificateRef="ref">c2lnbmF0dXJl</ns16:S100_SE_DigitalSignature>
+                <ns16:S100_SE_DigitalSignature id="sig" certificateRef="ref">c2lnbmF0dXJl</ns16:S100_SE_DigitalSignature>
             </ns15:digitalSignatureValue>
             <ns15:copyright>true</ns15:copyright>
             <ns15:classification>

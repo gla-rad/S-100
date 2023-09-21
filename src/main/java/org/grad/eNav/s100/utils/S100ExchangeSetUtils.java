@@ -17,17 +17,23 @@
 package org.grad.eNav.s100.utils;
 
 import _int.iho.s100.catalog._5_0.S100ExchangeCatalogue;
+import _int.iho.s100.catalog._5_0.S100GeographicBoundingBoxType;
 import org.iso.standards.iso._19115.__3.gco._1.CharacterStringPropertyType;
 import org.iso.standards.iso._19115.__3.gco._1.CodeListValueType;
+import org.iso.standards.iso._19115.__3.gco._1.DecimalPropertyType;
 import org.iso.standards.iso._19115.__3.gco._1.ObjectFactory;
 import org.iso.standards.iso._19115.__3.lan._1.CountryCodePropertyType;
 import org.iso.standards.iso._19115.__3.lan._1.LanguageCodePropertyType;
 import org.iso.standards.iso._19115.__3.lan._1.MDCharacterSetCodePropertyType;
 import org.iso.standards.iso._19115.__3.lan._1.PTLocaleType;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Geometry;
 
 import javax.xml.bind.*;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
@@ -94,6 +100,19 @@ public class S100ExchangeSetUtils {
     }
 
     /**
+     * A helper function to easily generate a decimal property type that is used
+     * in the S-100.
+     *
+     * @param decimal the provided Java decimal object
+     * @return the S-100 DecimalPropertyType object
+     */
+    public static DecimalPropertyType createDecimalPropertyType(BigDecimal decimal) {
+        final DecimalPropertyType decimalPropertyType = new DecimalPropertyType();
+        decimalPropertyType.setDecimal(decimal);
+        return decimalPropertyType;
+    }
+
+    /**
      * For a given code list type class, a code list value and the actual input
      * this helper function will generate a code list value object.
      *
@@ -116,7 +135,7 @@ public class S100ExchangeSetUtils {
      * Based on the provided Java Locale this function will generate the S-100
      * PTLocaleType object and return it.
      *
-     * @param locale the java locale object
+     * @param locale the Java locale object
      * @return the S-100 respective PTLocaleType object
      */
     public static PTLocaleType createPTLocaleType(Locale locale) {
@@ -149,6 +168,38 @@ public class S100ExchangeSetUtils {
                 StandardCharsets.UTF_8.displayName()));
         ptLocaleValue.setCharacterEncoding(mdCharacterSetCodePropertyType);
         return ptLocaleValue;
+    }
+
+    /**
+     * Based on the provided Java Geometry this function will generate the S-100
+     * S100GeographicBoundingBoxType object and return it.
+     *
+     * @param geometry the Java geometry object
+     * @return the S-100 respective PTLocaleType object
+     */
+    public static S100GeographicBoundingBoxType createS100GeographicBoundingBoxType(Geometry geometry) {
+        // Sanity Check
+        if(Objects.isNull(geometry)) {
+            return null;
+        }
+
+        // Create the geometry envelope
+        final Envelope envelope = new Envelope();
+        for(Coordinate coordinate : geometry.getCoordinates()) {
+            envelope.expandToInclude(coordinate);
+        }
+
+        // Initialise a new bounding box type object
+        S100GeographicBoundingBoxType boundingBoxType = new S100GeographicBoundingBoxType();
+
+        // Populate the bounding box
+        boundingBoxType.setWestBoundLongitude(createDecimalPropertyType(BigDecimal.valueOf(envelope.getMinX())));
+        boundingBoxType.setEastBoundLongitude(createDecimalPropertyType(BigDecimal.valueOf(envelope.getMaxX())));
+        boundingBoxType.setSouthBoundLatitude(createDecimalPropertyType(BigDecimal.valueOf(envelope.getMinY())));
+        boundingBoxType.setNorthBoundLatitude(createDecimalPropertyType(BigDecimal.valueOf(envelope.getMaxY())));
+
+        // And return the result
+        return boundingBoxType;
     }
 
     /**

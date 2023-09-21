@@ -53,14 +53,14 @@ class S100ExchangeCatalogueBuilderTest {
     void setup() throws IOException {
         this.s100ExchangeCatalogueBuilder = new S100ExchangeCatalogueBuilder((id, algorithm, payload) -> {
             S100SEDigitalSignature s100SEDigitalSignature = new S100SEDigitalSignature();
-            s100SEDigitalSignature.setId(id.toString());
+            s100SEDigitalSignature.setId("sig");
             s100SEDigitalSignature.setCertificateRef("ref");
             s100SEDigitalSignature.setValue("signature".getBytes());
             return s100SEDigitalSignature;
         });
         this.s100DatasetDiscoveryMetadataBuilder = new S100DatasetDiscoveryMetadataBuilder((id, algorithm, payload) -> {
             S100SEDigitalSignature s100SEDigitalSignature = new S100SEDigitalSignature();
-            s100SEDigitalSignature.setId(id.toString());
+            s100SEDigitalSignature.setId("sig");
             s100SEDigitalSignature.setCertificateRef("ref");
             s100SEDigitalSignature.setValue("signature".getBytes());
             return s100SEDigitalSignature;

@@ -23,13 +23,19 @@ import org.grad.eNav.s100.enums.SecurityClassification;
 import org.grad.eNav.s100.enums.TelephoneType;
 import org.iso.standards.iso._19115.__3.gco._1.CharacterStringPropertyType;
 import org.iso.standards.iso._19115.__3.gco._1.CodeListValueType;
+import org.iso.standards.iso._19115.__3.gco._1.DecimalPropertyType;
 import org.iso.standards.iso._19115.__3.lan._1.PTLocaleType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.geom.PrecisionModel;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.cert.CertificateException;
@@ -67,7 +73,7 @@ class S100ExchangeSetUtilsTest {
         // Create an exchange set catalogue builder
         this.s100ExchangeCatalogueBuilder = new S100ExchangeCatalogueBuilder((id, algorithm, payload) -> {
             S100SEDigitalSignature s100SEDigitalSignature = new S100SEDigitalSignature();
-            s100SEDigitalSignature.setId(id.toString());
+            s100SEDigitalSignature.setId("sig");
             s100SEDigitalSignature.setCertificateRef("ref");
             s100SEDigitalSignature.setValue("signature".getBytes());
             return s100SEDigitalSignature;
@@ -76,7 +82,7 @@ class S100ExchangeSetUtilsTest {
         // Create the medatata file builders
         this.s100DatasetDiscoveryMetadataBuilder = new S100DatasetDiscoveryMetadataBuilder((id, algorithm, payload) -> {
             S100SEDigitalSignature s100SEDigitalSignature = new S100SEDigitalSignature();
-            s100SEDigitalSignature.setId(id.toString());
+            s100SEDigitalSignature.setId("sig");
             s100SEDigitalSignature.setCertificateRef("ref");
             s100SEDigitalSignature.setValue("signature".getBytes());
             return s100SEDigitalSignature;
@@ -211,7 +217,6 @@ class S100ExchangeSetUtilsTest {
     /**
      * The that for a null list, the CharacterStringPropertyType list generation
      * method will return an empty list respectively.
-     * method will return an empty list respectively.
      */
     @Test
     void testCreateCharacterStringListNull() {
@@ -220,6 +225,32 @@ class S100ExchangeSetUtilsTest {
         // Assert that the CharacterStringPropertyType is not empty and seems valid
         assertNotNull(cspts);
         assertEquals(0, cspts.size());
+    }
+
+    /**
+     * Test that for a valid decimal input, the DecimalPropertyType generation
+     * method will return a valid and populated S-100 object.
+     */
+    @Test
+    void testCreateDecimalPropertyType() {
+        final DecimalPropertyType decimalPropertyType = S100ExchangeSetUtils.createDecimalPropertyType(BigDecimal.ONE);
+
+        // Assert that the DecimalPropertyType is not empty and seems valid
+        assertNotNull(decimalPropertyType);
+        assertEquals(BigDecimal.ONE, decimalPropertyType.getDecimal());
+    }
+
+    /**
+     * Test that for a null decimal input, the DecimalPropertyType generation
+     * method will return a valid but empty S-100 object.
+     */
+    @Test
+    void testCreateDecimalPropertyTypeNull() {
+        final DecimalPropertyType decimalPropertyType = S100ExchangeSetUtils.createDecimalPropertyType(null);
+
+        // Assert that the DecimalPropertyType is not empty and seems valid
+        assertNotNull(decimalPropertyType);
+        assertNull(decimalPropertyType.getDecimal());
     }
 
     /**
@@ -277,6 +308,56 @@ class S100ExchangeSetUtilsTest {
 
         assertNull(ptLocaleType);
     }
+
+    /**
+     * Test that provided a valid geometry, the S100GeographicBoundingBoxType
+     * generation method will generate and populate the respective S-100
+     * boundary object correctly.
+     * <p/>
+     * Note that for this test the geometry is not a perfect square, so that
+     * we make sure we can calculate correctly the bounding boxes for generic
+     * shapes.
+     */
+    @Test
+    void testCreateS100GeographicBoundingBoxType() {
+        // Create a geometry first
+        final GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
+        final Polygon geometry = geometryFactory.createPolygon(new Coordinate[]{
+                new Coordinate(-10, -10),
+                new Coordinate(-11, 10),
+                new Coordinate(10, 11),
+                new Coordinate(11, -11),
+                new Coordinate(-10, -10),
+        });
+
+        // Generate the S-100 bounding box
+        S100GeographicBoundingBoxType s100GeographicBoundingBoxType = S100ExchangeSetUtils.createS100GeographicBoundingBoxType(geometry);
+
+        // Assert that the bounding box is not empty and seems valid
+        assertNotNull(s100GeographicBoundingBoxType);
+        assertNotNull(s100GeographicBoundingBoxType.getWestBoundLongitude());
+        assertNotNull(s100GeographicBoundingBoxType.getEastBoundLongitude());
+        assertNotNull(s100GeographicBoundingBoxType.getSouthBoundLatitude());
+        assertNotNull(s100GeographicBoundingBoxType.getNorthBoundLatitude());
+        assertNotNull(s100GeographicBoundingBoxType.getWestBoundLongitude().getDecimal());
+        assertNotNull(s100GeographicBoundingBoxType.getEastBoundLongitude().getDecimal());
+        assertNotNull(s100GeographicBoundingBoxType.getSouthBoundLatitude().getDecimal());
+        assertNotNull(s100GeographicBoundingBoxType.getNorthBoundLatitude().getDecimal());
+        assertEquals(-11.0, s100GeographicBoundingBoxType.getWestBoundLongitude().getDecimal().doubleValue());
+        assertEquals(11.0, s100GeographicBoundingBoxType.getEastBoundLongitude().getDecimal().doubleValue());
+        assertEquals(-11.0, s100GeographicBoundingBoxType.getSouthBoundLatitude().getDecimal().doubleValue());
+        assertEquals(11.0,s100GeographicBoundingBoxType.getNorthBoundLatitude().getDecimal().doubleValue());
+    }
+
+    /**
+     * Test that for a null geometry input, the S100GeographicBoundingBoxType
+     * generation method will return a simple null output.
+     */
+    @Test
+    void testCreateS100GeographicBoundingBoxTypeNull() {
+        assertNull(S100ExchangeSetUtils.createS100GeographicBoundingBoxType(null));
+    }
+
 
     /**
      * Test that we can create (marshall) and XML based on an S-125 Dataset type
