@@ -595,7 +595,7 @@ public class S100DatasetDiscoveryMetadataBuilder {
         if(Objects.nonNull(this.signatureProvider) && Objects.nonNull(payload)) {
             // Generate the signature
             final S100SEDigitalSignature signature = this.signatureProvider.generateSignature(
-                    this.datasetID,
+                    this.fileName,
                     signatureReference,
                     payload);
 

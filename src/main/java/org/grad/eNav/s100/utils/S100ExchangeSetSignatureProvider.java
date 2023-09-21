@@ -29,6 +29,17 @@ import _int.iho.s100.catalog._5_0.S100SEDigitalSignatureReference;
  */
 public interface S100ExchangeSetSignatureProvider {
 
-    S100SEDigitalSignature generateSignature(Object id, S100SEDigitalSignatureReference algorithm, byte[] payload);
+    /**
+     * The signature generation interface. This provides the ID of the object
+     * to be signed, algorithm requested for the signature process and the
+     * payload to be signed. Note that the object ID is usually a file name,
+     * unless another signature is to be signed etc.
+     *
+     * @param objectId the identifier of the object to be signed
+     * @param algorithm the algorithm to be used
+     * @param payload the paylod to be signed
+     * @return the populated S-100 digital signature object
+     */
+    S100SEDigitalSignature generateSignature(Object objectId, S100SEDigitalSignatureReference algorithm, byte[] payload);
 
 }
