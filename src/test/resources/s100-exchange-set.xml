@@ -118,7 +118,7 @@
                     <ns2:polygon>
                         <ns9:Polygon srsDimension="4326">
                             <ns9:exterior>
-<ns9:AbstractRing xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns9:RingType">
+<ns9:AbstractRing xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns9:RingType" aggregationType="sequence">
     <ns9:curveMember>
         <ns9:AbstractCurve xsi:type="ns9:CurveType">
             <ns9:segments>
