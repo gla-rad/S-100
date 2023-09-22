@@ -256,6 +256,7 @@ public class S100ExchangeSetUtils {
             curveType.setSegments(segments);
             curvePropertyType.setAbstractCurve(gmlObjectFactory.createAbstractCurve(curveType));
             ringType.setCurveMembers(Collections.singletonList(curvePropertyType));
+            ringType.setAggregationType(AggregationType.SEQUENCE);
             abstractRingPropertyType.setAbstractRing(gmlObjectFactory.createAbstractRing(ringType));
             polygonType.setExterior(abstractRingPropertyType);
             polygonType.setSrsDimension(BigInteger.valueOf(geometry.getSRID()));

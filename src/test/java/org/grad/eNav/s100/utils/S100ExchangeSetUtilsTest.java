@@ -17,6 +17,7 @@
 package org.grad.eNav.s100.utils;
 
 import _int.iho.s100.catalog._5_0.*;
+import net.opengis.gml._3.*;
 import org.grad.eNav.s100.enums.MaintenanceFrequency;
 import org.grad.eNav.s100.enums.RoleCode;
 import org.grad.eNav.s100.enums.SecurityClassification;
@@ -356,6 +357,78 @@ class S100ExchangeSetUtilsTest {
         assertNull(S100ExchangeSetUtils.createS100GeographicBoundingBoxType(null));
     }
 
+    /**
+     * Test that we can successfully generate a geographical data coverage
+     * description in S-100 if we provide a valid geometry.
+     */
+    @Test
+    void testCreateS100DataCoverages() {
+        // Generate the data coverage
+        List<S100DataCoverage> dataCoverage = S100ExchangeSetUtils.createS100DataCoverages(this.geometry);
+
+        // Assert that the data coverage is not empty and seems valid
+        assertNotNull(dataCoverage);
+        assertEquals(1, dataCoverage.size());
+        assertNotNull(dataCoverage.get(0));
+        assertNotNull(dataCoverage.get(0).getBoundingPolygons());
+        assertEquals(1, dataCoverage.get(0).getBoundingPolygons().size());
+        assertNotNull(dataCoverage.get(0).getBoundingPolygons().get(0));
+        assertNotNull(dataCoverage.get(0).getBoundingPolygons().get(0).getPolygons());
+        assertEquals(1, dataCoverage.get(0).getBoundingPolygons().get(0).getPolygons().size());
+        assertNotNull(dataCoverage.get(0).getBoundingPolygons().get(0).getPolygons().get(0));
+        assertNotNull(dataCoverage.get(0).getBoundingPolygons().get(0).getPolygons().get(0).getAbstractGeometry());
+        assertNotNull(dataCoverage.get(0).getBoundingPolygons().get(0).getPolygons().get(0).getAbstractGeometry().getValue());
+        assertTrue(dataCoverage.get(0).getBoundingPolygons().get(0).getPolygons().get(0).getAbstractGeometry().getValue() instanceof PolygonType);
+
+        // Now investigate the polygon itself
+        PolygonType polygonType = (PolygonType) dataCoverage.get(0).getBoundingPolygons().get(0).getPolygons().get(0).getAbstractGeometry().getValue();
+        assertNotNull(polygonType.getExterior());
+        assertNotNull(polygonType.getExterior().getAbstractRing());
+        assertNotNull(polygonType.getExterior().getAbstractRing().getValue());
+        assertTrue(polygonType.getExterior().getAbstractRing().getValue() instanceof RingType);
+
+        // Then investigate the ring type
+        RingType ringType = (RingType)polygonType.getExterior().getAbstractRing().getValue();
+        assertEquals(AggregationType.SEQUENCE, ringType.getAggregationType());
+        assertNotNull(ringType.getCurveMembers());
+        assertEquals(1, ringType.getCurveMembers().size());
+        assertNotNull(ringType.getCurveMembers().get(0));
+        assertNotNull(ringType.getCurveMembers().get(0).getAbstractCurve());
+        assertNotNull(ringType.getCurveMembers().get(0).getAbstractCurve().getValue());
+        assertTrue(ringType.getCurveMembers().get(0).getAbstractCurve().getValue() instanceof CurveType);
+
+        // Then investigate the curve
+        CurveType curveType = (CurveType) ringType.getCurveMembers().get(0).getAbstractCurve().getValue();
+        assertNotNull(curveType.getSegments());
+        assertNotNull(curveType.getSegments().getAbstractCurveSegments());
+        assertEquals(5, curveType.getSegments().getAbstractCurveSegments().size());
+
+        // Finally investigate all the segments
+        for(int i=0; i < curveType.getSegments().getAbstractCurveSegments().size(); i++){
+            assertNotNull(curveType.getSegments().getAbstractCurveSegments().get(i).getValue());
+            assertTrue(curveType.getSegments().getAbstractCurveSegments().get(i).getValue() instanceof LineStringSegmentType);
+
+            // Invertigate each individual line segment
+            LineStringSegmentType lineStringSegmentType = (LineStringSegmentType) curveType.getSegments().getAbstractCurveSegments().get(i).getValue();
+            assertNotNull(lineStringSegmentType.getPosList());
+            assertNotNull(lineStringSegmentType.getPosList().getValue());
+            assertEquals(2, lineStringSegmentType.getPosList().getValue().length);
+            assertEquals(geometry.getCoordinates()[i].getX(), lineStringSegmentType.getPosList().getValue()[0]);
+            assertEquals(geometry.getCoordinates()[i].getY(), lineStringSegmentType.getPosList().getValue()[1]);
+        }
+
+        // And finally investigate the curve property type
+        //CurvePropertyType
+    }
+
+    /**
+     * Test that for a null geometry input, the S100DataCoverage list
+     * generation method will return a simple null output.
+     */
+    @Test
+    void testCreateS100DataCoveragesNull() {
+        assertNull(S100ExchangeSetUtils.createS100DataCoverages(null));
+    }
 
     /**
      * Test that we can create (marshall) and XML based on an S-125 Dataset type
