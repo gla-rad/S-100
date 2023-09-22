@@ -121,7 +121,7 @@ public class S100ExchangeCatalogueBuilder {
      * @param dataServerIdentifier the exchange set data server identifier
      * @return the S100 exchange set catalogue builder
      */
-    public S100ExchangeCatalogueBuilder setdataServerIdentifier(String dataServerIdentifier) {
+    public S100ExchangeCatalogueBuilder setDataServerIdentifier(String dataServerIdentifier) {
         this.dataServerIdentifier = dataServerIdentifier;
         return this;
     }
@@ -226,28 +226,6 @@ public class S100ExchangeCatalogueBuilder {
     }
 
     /**
-     * Sets the exchange set data server identifier.
-     *
-     * @param dataServerIdentifier the exchange set data server identifier
-     * @return the S100 exchange set catalogue builder
-     */
-    public S100ExchangeCatalogueBuilder setDataServerIdentifier(String dataServerIdentifier) {
-        this.dataServerIdentifier = dataServerIdentifier;
-        return this;
-    }
-
-    /**
-     * Sets the exchange set list of product specifications.
-     *
-     * @param productSpecifications the list of exchange set product specifications
-     * @return the S100 exchange set catalogue builder
-     */
-    public S100ExchangeCatalogueBuilder setProductSpecification(List<S100ProductSpecification> productSpecifications) {
-        this.productSpecifications = productSpecifications;
-        return this;
-    }
-
-    /**
      * Sets the exchange set description information.
      *
      * @param description the exchange set description information
@@ -266,6 +244,17 @@ public class S100ExchangeCatalogueBuilder {
      */
     public S100ExchangeCatalogueBuilder setComment(String comment) {
         this.comment = comment;
+        return this;
+    }
+
+    /**
+     * Sets the exchange set list of product specifications.
+     *
+     * @param productSpecifications the list of exchange set product specifications
+     * @return the S100 exchange set catalogue builder
+     */
+    public S100ExchangeCatalogueBuilder setProductSpecification(List<S100ProductSpecification> productSpecifications) {
+        this.productSpecifications = productSpecifications;
         return this;
     }
 

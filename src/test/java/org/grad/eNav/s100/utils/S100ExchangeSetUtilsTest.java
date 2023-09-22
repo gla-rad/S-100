@@ -27,10 +27,7 @@ import org.iso.standards.iso._19115.__3.gco._1.DecimalPropertyType;
 import org.iso.standards.iso._19115.__3.lan._1.PTLocaleType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.Polygon;
-import org.locationtech.jts.geom.PrecisionModel;
+import org.locationtech.jts.geom.*;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
@@ -58,6 +55,7 @@ class S100ExchangeSetUtilsTest {
     private S100DatasetDiscoveryMetadataBuilder s100DatasetDiscoveryMetadataBuilder;
     private S100ExchangeCatalogue s100ExchangeCatalogue;
     private String s100ExchangeSetXml;
+    private Geometry geometry;
 
     // Fixed Variables
     private String isoType = "ISO 19103:2015";
@@ -70,6 +68,16 @@ class S100ExchangeSetUtilsTest {
      */
     @BeforeEach
     void setup() throws IOException, CertificateException, JAXBException {
+        // Create a geometry first
+        final GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
+        this.geometry = geometryFactory.createPolygon(new Coordinate[]{
+                new Coordinate(-10, -10),
+                new Coordinate(-11, 10),
+                new Coordinate(10, 11),
+                new Coordinate(11, -11),
+                new Coordinate(-10, -10),
+        });
+
         // Create an exchange set catalogue builder
         this.s100ExchangeCatalogueBuilder = new S100ExchangeCatalogueBuilder((id, algorithm, payload) -> {
             S100SEDigitalSignature s100SEDigitalSignature = new S100SEDigitalSignature();
@@ -158,7 +166,7 @@ class S100ExchangeSetUtilsTest {
                         .setProducingAgencyRole(RoleCode.ORIGINATOR)
                         .setProducerCode("producerCode")
                         .setEncodingFormat(S100EncodingFormat.GML)
-                        .setDataCoverages(null)
+                        .setDataCoverages(this.geometry)
                         .setComment("comment")
                         .setMetadataDateStamp(LocalDate.parse("2023-01-03", this.dateFormat))
                         .setReplacedData(false)
@@ -320,18 +328,8 @@ class S100ExchangeSetUtilsTest {
      */
     @Test
     void testCreateS100GeographicBoundingBoxType() {
-        // Create a geometry first
-        final GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
-        final Polygon geometry = geometryFactory.createPolygon(new Coordinate[]{
-                new Coordinate(-10, -10),
-                new Coordinate(-11, 10),
-                new Coordinate(10, 11),
-                new Coordinate(11, -11),
-                new Coordinate(-10, -10),
-        });
-
         // Generate the S-100 bounding box
-        S100GeographicBoundingBoxType s100GeographicBoundingBoxType = S100ExchangeSetUtils.createS100GeographicBoundingBoxType(geometry);
+        S100GeographicBoundingBoxType s100GeographicBoundingBoxType = S100ExchangeSetUtils.createS100GeographicBoundingBoxType(this.geometry);
 
         // Assert that the bounding box is not empty and seems valid
         assertNotNull(s100GeographicBoundingBoxType);

@@ -79,7 +79,7 @@ public class S100DatasetDiscoveryMetadataBuilder {
     protected RoleCode producingAgencyRole;
     protected String producerCode;
     protected S100EncodingFormat encodingFormat;
-    protected List<S100DataCoverage> dataCoverages;
+    protected Geometry dataCoverages;
     protected String comment;
     protected LocalDate metadataDateStamp;
     protected boolean replacedData;
@@ -401,7 +401,7 @@ public class S100DatasetDiscoveryMetadataBuilder {
      * @param dataCoverages the data coverages
      * @return the S-100 dataset discovery metadata builder
      */
-    public S100DatasetDiscoveryMetadataBuilder setDataCoverages(List<S100DataCoverage> dataCoverages) {
+    public S100DatasetDiscoveryMetadataBuilder setDataCoverages(Geometry dataCoverages) {
         this.dataCoverages = dataCoverages;
         return this;
     }
@@ -526,6 +526,7 @@ public class S100DatasetDiscoveryMetadataBuilder {
         metadata.setProducerCode(this.producerCode);
         S100EncodingFormatPropertyType s100EncodingFormatPropertyType = new S100EncodingFormatPropertyType();
         s100EncodingFormatPropertyType.setValue(this.encodingFormat);
+        metadata.setDataCoverages(S100ExchangeSetUtils.createS100DataCoverages(this.dataCoverages));
         metadata.setEncodingFormat(s100EncodingFormatPropertyType);
         metadata.setComment(S100ExchangeSetUtils.createCharacterStringPropertyType(this.comment));
         metadata.setReplacedData(false);

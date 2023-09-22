@@ -37,7 +37,7 @@ public interface S100ExchangeSetSignatureProvider {
      *
      * @param objectId the identifier of the object to be signed
      * @param algorithm the algorithm to be used
-     * @param payload the paylod to be signed
+     * @param payload the payload to be signed
      * @return the populated S-100 digital signature object
      */
     S100SEDigitalSignature generateSignature(Object objectId, S100SEDigitalSignatureReference algorithm, byte[] payload);

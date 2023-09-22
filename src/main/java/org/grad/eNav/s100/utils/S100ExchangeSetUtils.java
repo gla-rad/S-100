@@ -16,30 +16,35 @@
 
 package org.grad.eNav.s100.utils;
 
+import _int.iho.s100.catalog._5_0.S100BoundingPolygonType;
+import _int.iho.s100.catalog._5_0.S100DataCoverage;
 import _int.iho.s100.catalog._5_0.S100ExchangeCatalogue;
 import _int.iho.s100.catalog._5_0.S100GeographicBoundingBoxType;
+import net.opengis.gml._3.*;
 import org.iso.standards.iso._19115.__3.gco._1.CharacterStringPropertyType;
 import org.iso.standards.iso._19115.__3.gco._1.CodeListValueType;
 import org.iso.standards.iso._19115.__3.gco._1.DecimalPropertyType;
 import org.iso.standards.iso._19115.__3.gco._1.ObjectFactory;
+import org.iso.standards.iso._19115.__3.gmw._1.GMObjectPropertyType;
 import org.iso.standards.iso._19115.__3.lan._1.CountryCodePropertyType;
 import org.iso.standards.iso._19115.__3.lan._1.LanguageCodePropertyType;
 import org.iso.standards.iso._19115.__3.lan._1.MDCharacterSetCodePropertyType;
-import org.iso.standards.iso._19115.__3.lan._1.PTLocaleType;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Envelope;
-import org.locationtech.jts.geom.Geometry;
+import org.iso.standards.iso._19115.__3.lan._1.PTLocaleType;;
+import org.locationtech.jts.geom.*;
 
 import javax.xml.bind.*;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.lang.Boolean;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * The S-100 Exchange Set Utility Class.
@@ -175,7 +180,7 @@ public class S100ExchangeSetUtils {
      * S100GeographicBoundingBoxType object and return it.
      *
      * @param geometry the Java geometry object
-     * @return the S-100 respective PTLocaleType object
+     * @return the S-100 respective S100GeographicBoundingBoxType object
      */
     public static S100GeographicBoundingBoxType createS100GeographicBoundingBoxType(Geometry geometry) {
         // Sanity Check
@@ -200,6 +205,70 @@ public class S100ExchangeSetUtils {
 
         // And return the result
         return boundingBoxType;
+    }
+
+    /**
+     * Based on the provided Java Geometry this function will generate the S-100
+     * S100DataCoverage object and return it.
+     *
+     * @param geometry the Java geometry object
+     * @return the S-100 respective S100DataCoverage object
+     */
+    public static List<S100DataCoverage> createS100DataCoverages(Geometry geometry) {
+        // Sanity Check
+        if(Objects.isNull(geometry)) {
+            return null;
+        }
+
+        // Create the list of S-100 data coverage objects
+        final List<S100DataCoverage> dataCoverages = new ArrayList<>();
+
+        // Build the list of data coverage objects checking for collections
+        if(geometry instanceof GeometryCollection geometryCollection) {
+            for(int i=0; i<geometryCollection.getNumGeometries(); i++) {
+                Optional.of(i)
+                        .map(geometryCollection::getGeometryN)
+                        .map(S100ExchangeSetUtils::createS100DataCoverages)
+                        .map(dataCoverages::addAll);
+            }
+        } else {
+            // Initialise a new data coverage object
+            final S100DataCoverage dataCoverage = new S100DataCoverage();
+
+            // Set up an object factory
+            final net.opengis.gml._3.ObjectFactory gmlObjectFactory = new net.opengis.gml._3.ObjectFactory();
+
+            // Populate the data coverage
+            final S100BoundingPolygonType boundingPolygonType = new S100BoundingPolygonType();
+            final GMObjectPropertyType gmObjectPropertyType = new GMObjectPropertyType();
+            final PolygonType polygonType = new PolygonType();
+            final AbstractRingPropertyType abstractRingPropertyType = new AbstractRingPropertyType();
+            final RingType ringType = new RingType();
+            final CurvePropertyType curvePropertyType = new CurvePropertyType();
+            final CurveType curveType = new CurveType();
+            final Segments segments = new Segments();
+            final List<JAXBElement<? extends AbstractCurveSegmentType>> lineStringSegmentList = coordinatesToArray(geometry.getCoordinates())
+                    .stream()
+                    .map(S100ExchangeSetUtils::generateCurvePropertySegment)
+                    .map(gmlObjectFactory::createLineStringSegment)
+                    .collect(Collectors.toList());
+            segments.setAbstractCurveSegments(lineStringSegmentList);
+            curveType.setSegments(segments);
+            curvePropertyType.setAbstractCurve(gmlObjectFactory.createAbstractCurve(curveType));
+            ringType.setCurveMembers(Collections.singletonList(curvePropertyType));
+            abstractRingPropertyType.setAbstractRing(gmlObjectFactory.createAbstractRing(ringType));
+            polygonType.setExterior(abstractRingPropertyType);
+            polygonType.setSrsDimension(BigInteger.valueOf(geometry.getSRID()));
+            gmObjectPropertyType.setAbstractGeometry(new net.opengis.gml._3.ObjectFactory().createPolygon(polygonType));
+            boundingPolygonType.setPolygons(Collections.singletonList(gmObjectPropertyType));
+            dataCoverage.setBoundingPolygons(Collections.singletonList(boundingPolygonType));
+
+            // And add it to the list
+            dataCoverages.add(dataCoverage);
+        }
+
+        // Finally return the populated list
+        return dataCoverages;
     }
 
     /**
@@ -285,6 +354,72 @@ public class S100ExchangeSetUtils {
         // Then reconstruct the X509Certificate object
         return (X509Certificate) CertificateFactory.getInstance("X.509")
                 .generateCertificate(new ByteArrayInputStream(decodedPem));
+    }
+
+    /**
+     * Populates and return an S-100 surface property based on the provided
+     * surface geometry coordinates.
+     *
+     * @param coords    The coordinates of the element to be generated
+     * @return The populated point property
+     */
+    protected static PolygonPatchType generateSurfacePropertyPatch(Double[] coords) {
+        // Create an OpenGIS GML factory
+        net.opengis.gml._3.ObjectFactory opengisGMLFactory = new net.opengis.gml._3.ObjectFactory();
+
+        // Generate the elements
+        PolygonPatchType polygonPatchType = new PolygonPatchType();
+        AbstractRingPropertyType abstractRingPropertyType = new AbstractRingPropertyType();
+        LinearRingType linearRingType = new LinearRingType();
+        PosList posList = new PosList();
+
+        // Populate with the geometry data
+        posList.setValue(coords);
+
+        // Populate the elements
+        linearRingType.setPosList(posList);
+        abstractRingPropertyType.setAbstractRing(opengisGMLFactory.createLinearRing(linearRingType));
+        polygonPatchType.setExterior(abstractRingPropertyType);
+
+        // And return the output
+        return polygonPatchType;
+    }
+
+    /**
+     * Populates and return an S-100 curve property based on the provided line
+     * segment geometry coordinates.
+     *
+     * @param coords    The coordinates of the element to be generated
+     * @return The populated point property
+     */
+    protected static LineStringSegmentType generateCurvePropertySegment(Double[] coords) {
+        // Generate the elements
+        LineStringSegmentType lineStringSegmentType = new LineStringSegmentType();
+        PosList posList = new PosList();
+
+        // Populate with the geometry data
+        posList.setValue(coords);
+        lineStringSegmentType.setPosList(posList);
+
+        // And return the output
+        return lineStringSegmentType;
+    }
+
+    /**
+     * A simple utility function that receives JTS geometry coordinates and
+     * constructs a list of the coordinate values arrays.
+     *
+     * @param coordinates the provided coordinates
+     * @return the respective list of coordinate values arrays
+     */
+    protected static List<Double[]> coordinatesToArray(Coordinate[] coordinates) {
+        // Translate the coordinates to a simple list of doubles (Y, X)
+        return Optional.ofNullable(coordinates)
+                .map(Arrays::asList)
+                .orElse(Collections.emptyList())
+                .stream()
+                .map(c -> new Double[]{c.getX(), c.getY()})
+                .toList();
     }
 
 }
