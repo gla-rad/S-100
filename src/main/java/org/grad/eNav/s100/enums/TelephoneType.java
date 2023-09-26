@@ -49,6 +49,16 @@ public enum TelephoneType implements CodeListValueTypeProvider {
     }
 
     /**
+     * Gets the list of the code list.
+     *
+     * @return the list of the code list
+     */
+    @Override
+    public String getList() {
+        return CODELIST;
+    }
+
+    /**
      * Gets the code space of the code list.
      *
      * @return the code space of the code list
@@ -61,5 +71,10 @@ public enum TelephoneType implements CodeListValueTypeProvider {
     /**
      * The Enum Codespace.
      */
-    public static String CODESPACE = "https://schemas.isotc211.org/19115/-3/cit/1.0";
+    public static final String CODESPACE = "https://schemas.isotc211.org/19115/-3/cit/1.0";
+
+    /**
+     * The Enum Codelist.
+     */
+    public static final String CODELIST = "https://standards.iso.org/iso/19115/resources/Codelists/cat/codelists.xml";
 }

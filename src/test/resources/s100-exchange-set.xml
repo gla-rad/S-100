@@ -13,7 +13,7 @@
                 <ns1:CharacterString>+44 1255 245000</ns1:CharacterString>
             </ns5:number>
             <ns5:numberType>
-                <ns5:CI_TelephoneTypeCode codeListValue="voice" codeSpace="https://schemas.isotc211.org/19115/-3/cit/1.0">voice</ns5:CI_TelephoneTypeCode>
+                <ns5:CI_TelephoneTypeCode codeList="https://standards.iso.org/iso/19115/resources/Codelists/cat/codelists.xml" codeListValue="voice">voice</ns5:CI_TelephoneTypeCode>
             </ns5:numberType>
         </ns15:phone>
         <ns15:address>
@@ -81,7 +81,7 @@
             </ns15:digitalSignatureValue>
             <ns15:copyright>true</ns15:copyright>
             <ns15:classification>
-                <ns12:MD_ClassificationCode codeListValue="1" codeSpace="https://schemas.isotc211.org/19115/-3/cit/1.0">unclassified</ns12:MD_ClassificationCode>
+                <ns12:MD_ClassificationCode codeList="https://standards.iso.org/iso/19115/resources/Codelists/cat/codelists.xml" codeListValue="1">unclassified</ns12:MD_ClassificationCode>
             </ns15:classification>
             <ns15:purpose>newDataset</ns15:purpose>
             <ns15:notForNavigation>true</ns15:notForNavigation>
@@ -100,7 +100,7 @@
             <ns15:producingAgency>
                 <ns5:CI_Responsibility>
                     <ns5:role>
-                        <ns5:CI_RoleCode codeListValue="originator" codeSpace="https://schemas.isotc211.org/19115/-3/cit/1.0">originator</ns5:CI_RoleCode>
+                        <ns5:CI_RoleCode codeList="https://standards.iso.org/iso/19115/resources/Codelists/cat/codelists.xml" codeListValue="originator">originator</ns5:CI_RoleCode>
                     </ns5:role>
                     <ns5:party>
                         <ns5:CI_Organisation>
@@ -155,7 +155,7 @@
             <ns15:resourceMaintenance>
                 <ns3:MD_MaintenanceInformation>
                     <ns3:maintenanceAndUpdateFrequency>
-                        <ns3:MD_MaintenanceFrequencyCode codeListValue="continual" codeSpace="https://schemas.isotc211.org/19115/-3/mco/1.0">continual</ns3:MD_MaintenanceFrequencyCode>
+                        <ns3:MD_MaintenanceFrequencyCode codeList="https://standards.iso.org/iso/19115/resources/Codelists/cat/codelists.xml" codeListValue="continual">continual</ns3:MD_MaintenanceFrequencyCode>
                     </ns3:maintenanceAndUpdateFrequency>
                     <ns3:maintenanceDate>
                         <ns4:Abstract_TypedDate xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ns5:CI_Date_Type">

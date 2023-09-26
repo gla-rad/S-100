@@ -19,9 +19,11 @@ package org.grad.eNav.s100.enums;
 import org.grad.eNav.s100.utils.S100ExchangeSetUtils;
 import org.iso.standards.iso._19115.__3.gco._1.CodeListValueType;
 
+import java.util.Objects;
+
 /**
  * The CodeListValueTypeProvider Interface.
- *
+ * <p/>
  * This interface can be used by all the defined enums that represent code list
  * values to generate the S-100 CodeListValueType objects.
  *
@@ -30,7 +32,7 @@ import org.iso.standards.iso._19115.__3.gco._1.CodeListValueType;
 public interface CodeListValueTypeProvider {
 
     /**
-     * In most case the code is the same as the value of the code list object
+     * In most case the code is the same as the value of the code list object,
      * so we can just implement that and override it if required.
      *
      * @return the code list code to be used
@@ -40,7 +42,14 @@ public interface CodeListValueTypeProvider {
     }
 
     /**
-     * Returns the code cist space to be used.
+     * Returns the code list to be used.
+     *
+     * @return the code list to be used
+     */
+    String getList();
+
+    /**
+     * Returns the code list space to be used.
      *
      * @return the code list space to be used
      */
@@ -60,10 +69,10 @@ public interface CodeListValueTypeProvider {
      */
     default CodeListValueType getCodeListValueType() {
         return S100ExchangeSetUtils.createCodeListValueType(
-                null, // no need for the list if we have the space
-                getSpace(),
-                getCode(),
-                getValue()
+                this.getList(),
+                Objects.isNull(this.getList()) ? this.getSpace() : null,
+                this.getCode(),
+                this.getValue()
         );
     };
 
