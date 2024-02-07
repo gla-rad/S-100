@@ -17,12 +17,12 @@
 package org.grad.eNav.s100.utils;
 
 import _int.iho.s100.catalog._5_0.*;
+import jakarta.xml.bind.JAXBException;
 import org.grad.eNav.s100.enums.CodeListValueTypeProvider;
 import org.grad.eNav.s100.enums.TelephoneType;
 import org.iso.standards.iso._19115.__3.cit._2.CITelephoneTypeCodePropertyType;
 import org.iso.standards.iso._19115.__3.lan._1.PTLocalePropertyType;
 
-import javax.xml.bind.JAXBException;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;

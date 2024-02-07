@@ -16,7 +16,8 @@
 
 package org.grad.eNav.s100.adapters;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
+
 import java.util.Arrays;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;

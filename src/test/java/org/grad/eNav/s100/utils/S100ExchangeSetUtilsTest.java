@@ -17,6 +17,7 @@
 package org.grad.eNav.s100.utils;
 
 import _int.iho.s100.catalog._5_0.*;
+import jakarta.xml.bind.JAXBException;
 import net.opengis.gml._3.*;
 import org.grad.eNav.s100.enums.MaintenanceFrequency;
 import org.grad.eNav.s100.enums.RoleCode;
@@ -30,7 +31,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.*;
 
-import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;

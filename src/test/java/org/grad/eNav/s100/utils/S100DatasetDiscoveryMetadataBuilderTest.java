@@ -23,10 +23,8 @@ import org.grad.eNav.s100.enums.SecurityClassification;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.security.cert.CertificateException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;

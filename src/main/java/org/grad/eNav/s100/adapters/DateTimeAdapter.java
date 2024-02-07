@@ -16,7 +16,8 @@
 
 package org.grad.eNav.s100.adapters;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 

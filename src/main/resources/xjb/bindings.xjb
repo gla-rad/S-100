@@ -1,4 +1,4 @@
-<bindings version="2.1" xmlns="http://java.sun.com/xml/ns/jaxb"
+<bindings version="3.0" xmlns="https://jakarta.ee/xml/ns/jaxb"
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
     xmlns:gml="http://www.opengis.net/gml/3.2"
     xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"
