@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 GLA Research and Development Directorate
+ * Copyright (c) 2024 GLA Research and Development Directorate
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,18 +20,24 @@ import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 
 /**
  * The Date Adapter Class.
- *
- * This is used to translate between the java.time.LocalDate objects and the XML
+ * <p/>
+ * This is used to translate between the Java util.Date objects and the XML
  * date elements.
  *
  * @author Nikolaos Vastardis (email: Nikolaos.Vastardis@gla-rad.org)
  */
 public class DateAdapter extends XmlAdapter<String, LocalDate> {
 
-    private final DateTimeFormatter dateFormat = DateTimeFormatter.ISO_DATE;
+    public static final String S100_DATE_FORMAT = "yyyyMMdd";
+    public final DateTimeFormatter S100_DATE_FORMATTER = new DateTimeFormatterBuilder()
+            .parseCaseInsensitive()
+            .appendPattern(S100_DATE_FORMAT)
+            .parseStrict()
+            .toFormatter();
 
     /**
      * Marshall a Java Date object into an XML element.
@@ -41,8 +47,8 @@ public class DateAdapter extends XmlAdapter<String, LocalDate> {
      */
     @Override
     public String marshal(LocalDate date) {
-        synchronized (dateFormat) {
-            return dateFormat.format(date);
+        synchronized (S100_DATE_FORMATTER) {
+            return S100_DATE_FORMATTER.format(date);
         }
     }
 
@@ -54,8 +60,8 @@ public class DateAdapter extends XmlAdapter<String, LocalDate> {
      */
     @Override
     public LocalDate unmarshal(String xml) {
-        synchronized (dateFormat) {
-            return LocalDate.parse(xml, dateFormat);
+        synchronized (S100_DATE_FORMATTER) {
+            return LocalDate.parse(xml, S100_DATE_FORMATTER);
         }
     }
 

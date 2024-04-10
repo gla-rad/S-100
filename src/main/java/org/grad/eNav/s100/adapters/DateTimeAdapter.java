@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 GLA Research and Development Directorate
+ * Copyright (c) 2024 GLA Research and Development Directorate
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,18 +20,31 @@ import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+
+import static org.grad.eNav.s100.adapters.DateAdapter.S100_DATE_FORMAT;
+import static org.grad.eNav.s100.adapters.TimeAdapter.S100_TIME_FORMAT;
 
 /**
  * The DateTime Adapter Class.
- *
- * This is used to translate between the java.time.LocalDateTime objects and the
- * XML dateTime elements.
+ * <p/>
+ * This is used to translate between the Java util.Date objects and the XML
+ * dateTime elements.
  *
  * @author Nikolaos Vastardis (email: Nikolaos.Vastardis@gla-rad.org)
  */
 public class DateTimeAdapter extends XmlAdapter<String, LocalDateTime> {
 
-    private final DateTimeFormatter dateFormat = DateTimeFormatter.ISO_DATE;
+    public static final DateTimeFormatter S100_DATE_TIME_FORMATTER = new DateTimeFormatterBuilder()
+            .parseCaseInsensitive()
+            .appendPattern(S100_DATE_FORMAT)
+            .appendPattern("'T'")
+            .appendPattern(S100_TIME_FORMAT)
+            .optionalStart()
+            .parseLenient()
+            .appendOffset("+HHMM", "Z")
+            .parseStrict()
+            .toFormatter();
 
     /**
      * Marshall a Java Date object into an XML element.
@@ -41,8 +54,8 @@ public class DateTimeAdapter extends XmlAdapter<String, LocalDateTime> {
      */
     @Override
     public String marshal(LocalDateTime date) {
-        synchronized (dateFormat) {
-            return dateFormat.format(date);
+        synchronized (S100_DATE_TIME_FORMATTER) {
+            return S100_DATE_TIME_FORMATTER.format(date);
         }
     }
 
@@ -54,8 +67,8 @@ public class DateTimeAdapter extends XmlAdapter<String, LocalDateTime> {
      */
     @Override
     public LocalDateTime unmarshal(String xml) {
-        synchronized (dateFormat) {
-            return LocalDateTime.parse(xml, dateFormat);
+        synchronized (S100_DATE_TIME_FORMATTER) {
+            return LocalDateTime.parse(xml, S100_DATE_TIME_FORMATTER);
         }
     }
 

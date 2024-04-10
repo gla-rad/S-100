@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 GLA Research and Development Directorate
+ * Copyright (c) 2024 GLA Research and Development Directorate
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 
 /**
  * The Time Adapter Class.
@@ -31,7 +32,12 @@ import java.time.format.DateTimeFormatter;
  */
 public class TimeAdapter extends XmlAdapter<String, LocalTime> {
 
-    private final DateTimeFormatter dateFormat = DateTimeFormatter.ISO_TIME;
+    public static final String S100_TIME_FORMAT = "HHmmss";
+    public final DateTimeFormatter S100_TIME_FORMATTER = new DateTimeFormatterBuilder()
+            .parseCaseInsensitive()
+            .appendPattern(S100_TIME_FORMAT)
+            .parseStrict()
+            .toFormatter();
 
     /**
      * Marshall a Java Date object into an XML element.
@@ -41,8 +47,8 @@ public class TimeAdapter extends XmlAdapter<String, LocalTime> {
      */
     @Override
     public String marshal(LocalTime date) {
-        synchronized (dateFormat) {
-            return dateFormat.format(date);
+        synchronized (S100_TIME_FORMATTER) {
+            return S100_TIME_FORMATTER.format(date);
         }
     }
 
@@ -54,8 +60,8 @@ public class TimeAdapter extends XmlAdapter<String, LocalTime> {
      */
     @Override
     public LocalTime unmarshal(String xml) {
-        synchronized (dateFormat) {
-            return LocalTime.parse(xml, dateFormat);
+        synchronized (S100_TIME_FORMATTER) {
+            return LocalTime.parse(xml, S100_TIME_FORMATTER);
         }
     }
 
