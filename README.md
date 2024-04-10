@@ -1,7 +1,7 @@
 # S-100 Catalog - GLA Research & Development
-This repository contains some preliminary work on the IHO S100 Catalog exchange
-sets, performed by the UK's General Lighthouse Authority Research and 
-Development Directorate.
+This repository contains some preliminary work on the IHO S-100 Catalog Exchange
+Sets, performed by the UK's General Lighthouse Authority Research and 
+Development Directorate ([GRAD](https://www.gla-rad.org/)).
 
 *DO NOT USE THIS ON PRODUCTION*
 
@@ -11,9 +11,9 @@ S-100 standardization process.
 ## General Information
 This repository is actually a Maven project. it contains a custom definition
 of the IHO S-100 standard, version 5.0.0 and more importantly the catalog 
-features in the following location.
+features from the following resources location.
 
-    src/main/resources/xsd/S100/5.0.0/S100Catalog/20220705/
+[src/main/resources/xsd/S100/5.0.0/S100Catalog/20220705/S100_ExchangeCatalogue.xsd](src/main/resources/xsd/S100/5.0.0/S100Catalog/20220705/S100_ExchangeCatalogue.xsd)
 
 Apart from the S-100 Catalog definition, this project can also be used as a Java 
 dependency after it is built with Maven. Using JAXB it can parse the S-100
