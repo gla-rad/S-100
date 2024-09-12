@@ -6,7 +6,7 @@
 
     <groupId>org.grad.eNav</groupId>
     <artifactId>S100Catalogue</artifactId>
-    <version>0.5.14</version>
+    <version>0.5.20</version>
 
     <properties>
         <maven.min.version>3.0.0</maven.min.version>
@@ -140,7 +140,7 @@
                         <include>xjb/bindings.xjb</include>
                     </bindingIncludes>
                     <schemaIncludes>
-                        <include>xsd/S100/5.0.0/S100Catalog/20220705/S100_ExchangeCatalogue.xsd</include>
+                        <include>xsd/S100/5.2.0/S100Catalog/20240415/S100_ExchangeCatalogue.xsd</include>
                     </schemaIncludes>
                     <generateDirectory>${basedir}/src/main/generated/</generateDirectory>
                     <cleanPackageDirectories>true</cleanPackageDirectories>

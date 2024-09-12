@@ -16,8 +16,8 @@
 
 package org.grad.eNav.s100.utils;
 
-import _int.iho.s100.catalog._5_0.S100SEDigitalSignature;
-import _int.iho.s100.catalog._5_0.S100SEDigitalSignatureReference;
+import _int.iho.s100.catalog._5_2.S100SEDigitalSignature;
+import _int.iho.s100.catalog._5_2.S100SEDigitalSignatureReference;
 
 /**
  * The S-100 Exchange Set Signature Provider Interface.

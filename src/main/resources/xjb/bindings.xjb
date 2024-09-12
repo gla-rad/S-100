@@ -16,18 +16,18 @@
     </globalBindings>
 
     <bindings
-            schemaLocation="../xsd/S100/5.0.0/S100SE/20220728/Part15.xsd"
+            schemaLocation="../xsd/S100/5.2.0/S100SE/20240415/Part15.xsd"
             node="/xs:schema">
         <schemaBindings>
-            <package name="_int.iho.s100.catalog._5_0"/>
+            <package name="_int.iho.s100.catalog._5_2"/>
         </schemaBindings>
     </bindings>
 
     <bindings
-            schemaLocation="../xsd/S100/5.0.0/S100Catalog/20220705/S100_ExchangeCatalogue.xsd"
+            schemaLocation="../xsd/S100/5.2.0/S100Catalog/20240415/S100_ExchangeCatalogue.xsd"
             node="/xs:schema">
         <schemaBindings>
-            <package name="_int.iho.s100.catalog._5_0"/>
+            <package name="_int.iho.s100.catalog._5_2"/>
         </schemaBindings>
     </bindings>
 

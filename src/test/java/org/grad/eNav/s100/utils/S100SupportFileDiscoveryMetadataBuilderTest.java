@@ -16,7 +16,7 @@
 
 package org.grad.eNav.s100.utils;
 
-import _int.iho.s100.catalog._5_0.*;
+import _int.iho.s100.catalog._5_2.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

@@ -16,10 +16,10 @@
 
 package org.grad.eNav.s100.utils;
 
-import _int.iho.s100.catalog._5_0.S100BoundingPolygonType;
-import _int.iho.s100.catalog._5_0.S100DataCoverage;
-import _int.iho.s100.catalog._5_0.S100ExchangeCatalogue;
-import _int.iho.s100.catalog._5_0.S100GeographicBoundingBoxType;
+import _int.iho.s100.catalog._5_2.S100BoundingPolygonType;
+import _int.iho.s100.catalog._5_2.S100DataCoverage;
+import _int.iho.s100.catalog._5_2.S100ExchangeCatalogue;
+import _int.iho.s100.catalog._5_2.S100GeographicBoundingBoxType;
 import jakarta.xml.bind.*;
 import net.opengis.gml._3.*;
 import org.iso.standards.iso._19115.__3.gco._1.CharacterStringPropertyType;
@@ -262,7 +262,7 @@ public class S100ExchangeSetUtils {
             polygonType.setSrsDimension(BigInteger.valueOf(geometry.getSRID()));
             gmObjectPropertyType.setAbstractGeometry(new net.opengis.gml._3.ObjectFactory().createPolygon(polygonType));
             boundingPolygonType.setPolygons(Collections.singletonList(gmObjectPropertyType));
-            dataCoverage.setBoundingPolygons(Collections.singletonList(boundingPolygonType));
+            dataCoverage.setBoundingPolygon(boundingPolygonType);
 
             // And add it to the list
             dataCoverages.add(dataCoverage);

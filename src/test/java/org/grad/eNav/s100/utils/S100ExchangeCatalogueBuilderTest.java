@@ -16,7 +16,7 @@
 
 package org.grad.eNav.s100.utils;
 
-import _int.iho.s100.catalog._5_0.*;
+import _int.iho.s100.catalog._5_2.*;
 import jakarta.xml.bind.JAXBException;
 import org.grad.eNav.s100.enums.TelephoneType;
 import org.junit.jupiter.api.BeforeEach;

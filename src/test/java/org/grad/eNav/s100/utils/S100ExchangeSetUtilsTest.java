@@ -16,7 +16,7 @@
 
 package org.grad.eNav.s100.utils;
 
-import _int.iho.s100.catalog._5_0.*;
+import _int.iho.s100.catalog._5_2.*;
 import jakarta.xml.bind.JAXBException;
 import net.opengis.gml._3.*;
 import org.grad.eNav.s100.enums.MaintenanceFrequency;
@@ -370,18 +370,17 @@ class S100ExchangeSetUtilsTest {
         assertNotNull(dataCoverage);
         assertEquals(1, dataCoverage.size());
         assertNotNull(dataCoverage.get(0));
-        assertNotNull(dataCoverage.get(0).getBoundingPolygons());
-        assertEquals(1, dataCoverage.get(0).getBoundingPolygons().size());
-        assertNotNull(dataCoverage.get(0).getBoundingPolygons().get(0));
-        assertNotNull(dataCoverage.get(0).getBoundingPolygons().get(0).getPolygons());
-        assertEquals(1, dataCoverage.get(0).getBoundingPolygons().get(0).getPolygons().size());
-        assertNotNull(dataCoverage.get(0).getBoundingPolygons().get(0).getPolygons().get(0));
-        assertNotNull(dataCoverage.get(0).getBoundingPolygons().get(0).getPolygons().get(0).getAbstractGeometry());
-        assertNotNull(dataCoverage.get(0).getBoundingPolygons().get(0).getPolygons().get(0).getAbstractGeometry().getValue());
-        assertTrue(dataCoverage.get(0).getBoundingPolygons().get(0).getPolygons().get(0).getAbstractGeometry().getValue() instanceof PolygonType);
+        assertNotNull(dataCoverage.get(0).getBoundingPolygon());
+        assertNotNull(dataCoverage.get(0).getBoundingPolygon());
+        assertNotNull(dataCoverage.get(0).getBoundingPolygon().getPolygons());
+        assertEquals(1, dataCoverage.get(0).getBoundingPolygon().getPolygons().size());
+        assertNotNull(dataCoverage.get(0).getBoundingPolygon().getPolygons().get(0));
+        assertNotNull(dataCoverage.get(0).getBoundingPolygon().getPolygons().get(0).getAbstractGeometry());
+        assertNotNull(dataCoverage.get(0).getBoundingPolygon().getPolygons().get(0).getAbstractGeometry().getValue());
+        assertTrue(dataCoverage.get(0).getBoundingPolygon().getPolygons().get(0).getAbstractGeometry().getValue() instanceof PolygonType);
 
         // Now investigate the polygon itself
-        PolygonType polygonType = (PolygonType) dataCoverage.get(0).getBoundingPolygons().get(0).getPolygons().get(0).getAbstractGeometry().getValue();
+        PolygonType polygonType = (PolygonType) dataCoverage.get(0).getBoundingPolygon().getPolygons().get(0).getAbstractGeometry().getValue();
         assertNotNull(polygonType.getExterior());
         assertNotNull(polygonType.getExterior().getAbstractRing());
         assertNotNull(polygonType.getExterior().getAbstractRing().getValue());
